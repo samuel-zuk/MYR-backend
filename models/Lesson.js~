@@ -1,0 +1,58 @@
+//Require Mongoose
+var mongoose = require('mongoose');
+
+//Define a schema
+var Schema = mongoose.Schema;
+
+var SomeModelSchema = new Schema({
+    id: Number,
+    name: String,
+    prompt: String,
+    code: String,
+    categories: []
+});
+
+let Lesson = mongoose.model('Lesson', SomeModelSchema);
+
+let testLesson = new Lesson({
+  id: 1,
+  name: "Test Lesson",
+  prompt: "Test Prompt",
+  code: "sphere()"
+});
+
+//testLesson.save().then()
+
+Lesson.getLessons = (callback, limit) => {
+  Lesson.find(callback).limit(limit)
+}
+
+Lesson.getLessonById = (id, callback, limit) => {
+  Lesson.findById(id, callback).limit(limit)
+}
+
+Lesson.getLessonNum = (num, callback, limit) => {
+  Lesson.findOne({id: num}, callback).limit(limit)
+}
+
+Lesson.lessonIDExists = (num, callback, limit) => {
+    Lesson.findOne({id: num}, callback).limit(limit)
+    console.log('**** ID EXISTS ****')
+    console.log(returnV)
+    console.log('*******************')
+}
+
+Lesson.getLessonID = (num, callback, limit) => {
+    Lesson.find({id:num}, {_id:1}, callback).limit(limit) 
+}
+
+Lesson.updateLesson = (num, data, limit) => {
+    console.log('did this work instead')
+    Lesson.findOneAndUpdate( {id:num}, data)
+}
+
+Lesson.deleteAll = () => {
+	console.log('Delete All was called');
+}
+
+module.exports = Lesson

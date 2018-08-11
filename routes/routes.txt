@@ -1,0 +1,25 @@
+All are /lesson
+
+/ - Get
+-Query Strings
+--Category
+--Name
+--ID
+---Need to add more query sting parameters
+
+/ - Post
+---DONE
+
+/:id - Get
+---DONE
+
+/:id - Put
+--Issue with findOneAndUpdate call
+
+/:id - Delete
+---DONE(slightly different path)
+
+/reset - Delete
+-Delete all for dev only
+--Need to make work
+

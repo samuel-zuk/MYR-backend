@@ -1,0 +1,13 @@
+All are /lesson
+/ - Get
+-Query Strings
+--Category
+--Name
+--ID
+/ - Post
+/:id - Get
+/:id - Put
+/:id - Delete
+/reset - Delete
+-Delete all for dev only
+
