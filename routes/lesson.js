@@ -1,7 +1,7 @@
 var express = require('express')
 var router = express.Router()
 
-var Lesson = require('../models/Lesson')
+var Lesson = require('../controllers/Lesson')
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -57,6 +57,8 @@ router.post('/', function (req, res, next) {
     code: req.body.code,
     categories: req.body.categories
   })
+
+  // Check to see if the item exist
   Lesson.getLessonNum(post.id, function (err, data) {
     if (err) {
       res.status(500).send(err)
@@ -85,7 +87,6 @@ router.put('/:id', function (req, res) {
   Lesson.updateLesson(req.params.id, put)
   console.log("Update lesson test stub\n")
   res.status(200).send('test')
-  res.send('Testing');
 })
 
 //update an existing lesson using its friendly id
