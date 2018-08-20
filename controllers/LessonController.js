@@ -121,8 +121,11 @@ module.exports = {
    /**
      * LessonController.create()
      */
+    /*
+     * Will not allow duplicate lesson numbers
+     */
     create: function (req, res) {
-        var Lesson = new LessonModel({
+        var newLesson = new LessonModel({
 			lessonNumber : req.body.lessonNumber,
 			name : req.body.name,
 			prompt : req.body.prompt,
@@ -133,15 +136,33 @@ module.exports = {
 
         });
 
-        Lesson.save(function (err, Lesson) {
+        LessonModel.findOne({lessonNumber:req.body.lessonNumber}, function (err, Lesson) {
             if (err) {
                 return res.status(500).json({
-                    message: 'Error when creating Lesson',
+                    message: 'Error when getting Lesson.',
                     error: err
                 });
             }
-            return res.status(201).json(Lesson);
+            if(Lesson != null)
+            {
+                return res.status(409).json({
+                    message: 'A lesson with this lesson number already exists',
+                });
+            }
+            else{
+                Lesson = newLesson
+                Lesson.save(function (err, Lesson) {
+                     if (err) {
+                         return res.status(500).json({
+                             message: 'Error when creating Lesson',
+                             error: err
+                         });
+                     }
+                    return res.status(201).json(Lesson);
+                });
+            }
         });
+        
     },
 
     /**
