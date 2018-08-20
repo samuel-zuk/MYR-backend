@@ -236,5 +236,21 @@ module.exports = {
             }
             return res.status(200).json();
         });
+    },
+
+    /**
+     * LessonController.remove_via_lessonNumber()
+     */
+    remove_via_lessonNumber: function (req, res) {
+        var lessonNumber = req.params.lessonNumber;
+        LessonModel.deleteOne({lessonNumber:lessonNumber}, function (err, Lesson) {
+            if (err) {
+                return res.status(500).json({
+                    message: 'Error when deleting the Lesson.',
+                    error: err
+                });
+            }
+            return res.status(200).json();
+        });
     }
 };

@@ -44,8 +44,8 @@ router.put('/:lessonNumber', LessonController.update_via_lessonNumber);
  * DELETE
  */
 /*
- * Deletes a lesson with the corresponding database id
+ * Deletes a lesson with the corresponding lesson number
  */
-router.delete('/:id', LessonController.remove);
+router.delete('/:lessonNumber', LessonController.remove_via_lessonNumber);
 
 module.exports = router;
