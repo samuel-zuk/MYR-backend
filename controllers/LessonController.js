@@ -11,15 +11,69 @@ module.exports = {
      * LessonController.list()
      */
     list: function (req, res) {
-        LessonModel.find(function (err, Lessons) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting Lesson.',
-                    error: err
-                });
+        var category = req.query.category;
+        var lessonNumber = req.query.lessonNumber;
+        var previous = req.query.previous;
+        var next = req.query.next;
+        var queryParams = "{";
+        if(category)
+        {
+            queryParams = queryParams + "\"categories\":" + "\"" + category + "\"";
+        }
+        if(lessonNumber)
+        {
+            if(queryParams != '{')
+            {
+                queryParams = queryParams + ",";
             }
-            return res.json(Lessons);
-        });
+            queryParams = queryParams + "\"lessonNumber\":" + "\"" + lessonNumber + "\"";
+        }
+        if(previous)
+        {
+            if(queryParams != '{')
+            {
+                queryParams = queryParams + ",";
+            }
+            queryParams = queryParams + "\"previous\":" + "\"" + previous + "\"";
+        }
+        if(next)
+        {
+            if(queryParams != '{')
+            {
+                queryParams = queryParams + ",";
+            }
+            queryParams = queryParams + "\"next\":" + "\"" + next + "\"";
+        }
+        queryParams = queryParams + '}';
+        if(queryParams != "{}")
+        {
+            var lessonQuery = JSON.parse(queryParams);
+            LessonModel.find(lessonQuery, function (err, Lesson) {
+                if (err) {
+                    return res.status(500).json({
+                        message: 'Error when getting Lesson.',
+                        error: err
+                    });
+                }
+                if (!Lesson) {
+                    return res.status(404).json({
+                        message: 'No such Lesson'
+                    });
+                }
+                return res.json(Lesson);
+            });
+        }
+        else{
+            LessonModel.find(function (err, Lessons) {
+                if (err) {
+                    return res.status(500).json({
+                        message: 'Error when getting Lesson.',
+                        error: err
+                    });
+                }
+                return res.json(Lessons);
+            });
+        }
     },
 
     /**
@@ -180,7 +234,7 @@ module.exports = {
                     error: err
                 });
             }
-            return res.status(204).json();
+            return res.status(200).json();
         });
     }
 };
