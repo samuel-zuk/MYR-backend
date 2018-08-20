@@ -4,12 +4,15 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+//sets the database connection details
 var mongoose = require('mongoose');
 var mongoDB = 'mongodb://127.0.0.1:27017/my_database';
 mongoose.connect(mongoDB, { useNewUrlParser: true });
+
 // Get Mongoose to use the global promise library
 mongoose.Promise = global.Promise;
 
+//set the file paths for the routers
 var indexRouter = require('./routes/IndexRoutes');
 var lessonRouter = require('./routes/LessonRoutes');
 
@@ -31,6 +34,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//sets the relative paths for the routers
 app.use('/', indexRouter);
 app.use('/apiv1/lessons', lessonRouter)
 
