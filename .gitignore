@@ -8,6 +8,7 @@
 
 # production
 /build
+/public
 
 # misc
 .DS_Store
@@ -21,11 +22,3 @@ yarn-debug.log*
 yarn-error.log*
 .vscode
 package-lock.json
-
-
-routes/lesson.js~
-routes/routes.txt
-routes/routes.txt~
-models/Lesson.js~
-
-/public

@@ -10,9 +10,8 @@ mongoose.connect(mongoDB, { useNewUrlParser: true });
 // Get Mongoose to use the global promise library
 mongoose.Promise = global.Promise;
 
-var indexRouter = require('./routes/index');
-var lessonRoute = require('./routes/lesson')
-var usersRouter = require('./routes/users');
+var indexRouter = require('./routes/IndexRoutes');
+var lessonRouter = require('./routes/LessonRoutes');
 
 //Get the default connection
 var db = mongoose.connection;
@@ -33,7 +32,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/lessons', lessonRoute)
+app.use('/lessons', lessonRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
