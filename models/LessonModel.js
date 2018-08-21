@@ -1,14 +1,14 @@
-var mongoose = require('mongoose');
-var Schema   = mongoose.Schema;
+let mongoose = require('mongoose');
+let Schema = mongoose.Schema;
 
-var LessonSchema = new Schema({
-	'lessonNumber' : Number,
-	'name' : String,
-	'prompt' : String,
-	'code' : String,
-	'categories' : Array,
-	'next' : Number,
-	'previous' : Number
+let LessonSchema = new Schema({
+	'lessonNumber': Number,
+	'name': String,
+	'prompt': String,
+	'code': String,
+	'categories': Array,
+	'next': Number,
+	'previous': Number
 });
 
 module.exports = mongoose.model('Lesson', LessonSchema);
