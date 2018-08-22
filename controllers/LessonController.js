@@ -12,7 +12,7 @@ module.exports = {
    */
   list: function (req, res) {
     // ToDo: Support comma separated list of categories
-    let category = req.query.category ? { category: req.query.category } : null;
+    let category = req.query.category ? { categories: req.query.category } : null;
     let lessonNumber = req.query.lessonNumber ? { lessonNumber: req.query.lessonNumber } : null;
     let previous = req.query.previous ? { previous: req.query.previous } : null;
     let next = req.query.next ? { next: req.query.next } : null;
