@@ -13,8 +13,8 @@ mongoose.connect(mongoDB, { useNewUrlParser: true });
 mongoose.Promise = global.Promise;
 
 //set the file paths for the routers
-let indexRouter = require('./routes/IndexRoutes');
 let lessonRouter = require('./routes/LessonRoutes');
+let indexRouter = require('./routes/IndexRoutes');
 
 //Get the default connection
 let db = mongoose.connection;
