@@ -1,44 +1,48 @@
-//var express = require('express');
-//var router = express.Router();
-//var bodyParser = require('body-parser');
-//router.use(bodyParser.urlencoded({ extended: false }));
-//router.use(bodyParser.json());
-//var UserModel = require('../models/UserModel.js');
+let jwt = require('jsonwebtoken');
+let bcrypt = require('bcryptjs');
+let config = require('../config/config');
+let UserModel = require('../models/UserModel.js');
 
-var jwt = require('jsonwebtoken');
-var bcrypt = require('bcryptjs');
-var config = require('../config/config');
-var UserModel = require('../models/UserModel.js');
+// let sync = require('synchronize');
+// let fiber = sync.fiber;
+// let await = sync.await;
+// let defer = sync.defer;
 
 module.exports = {
 
-    isAdmin: function (token) {
+    isAdmin: async function (token) {
         let isUserAdmin = false;
         if (!token) {
             console.log('There is no token');
             return false;
         }
 
-        jwt.verify(token, config.secret, function (err, decoded) {
+        await jwt.verify(token, config.secret, async function (err, decoded) {
             if (err) {
                 console.log('Token verification error');
+                return;
             }
-            UserModel.findById(decoded.id, { password: 0 }, function (err, user) {
+
+            await UserModel.findById(decoded.id, { password: 0 }, function (err, user) {
                 if (err) {
                     console.log('User lookup error');
+                    return;
                 }
                 if (!user) {
                     console.log('No user found error');
+                    return;
                 }
                 if (user.admin) {
                     isUserAdmin = true;
-                    console.log('return val  ' + isUserAdmin)
+                    //console.log('return val  ' + isUserAdmin)
+                    return;
+
                 }
             });
-
         });
-        console.log('return val ' + isUserAdmin)
         return isUserAdmin;
+        //console.log('return val ' + isUserAdmin)
+        //return isUserAdmin;
     }
 
 };

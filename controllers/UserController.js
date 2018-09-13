@@ -21,36 +21,56 @@ module.exports = {
      * UserController.list()
      */
     list: function (req, res) {
-        UserModel.find(function (err, Users) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting User.',
-                    error: err
+        let token = req.headers['x-access-token'];
+
+        verify.isAdmin(token).then(function (answer) {
+            if (!answer) {
+                res.status(401).send('User is not authorized to add lessons');
+            }
+            else {
+                UserModel.find(function (err, Users) {
+                    if (err) {
+                        return res.status(500).json({
+                            message: 'Error when getting User.',
+                            error: err
+                        });
+                    }
+                    return res.json(Users);
                 });
             }
-            return res.json(Users);
-        });
+        })
+
     },
 
     /**
      * UserController.show()
      */
     show: function (req, res) {
-        var id = req.params.id;
-        UserModel.findOne({ _id: id }, function (err, User) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting User.',
-                    error: err
+        let token = req.headers['x-access-token'];
+
+        verify.isAdmin(token).then(function (answer) {
+            if (!answer) {
+                res.status(401).send('User is not authorized to add lessons');
+            }
+            else {
+                var id = req.params.id;
+                UserModel.findOne({ _id: id }, function (err, User) {
+                    if (err) {
+                        return res.status(500).json({
+                            message: 'Error when getting User.',
+                            error: err
+                        });
+                    }
+                    if (!User) {
+                        return res.status(404).json({
+                            message: 'No such User'
+                        });
+                    }
+                    return res.json(User);
                 });
             }
-            if (!User) {
-                return res.status(404).json({
-                    message: 'No such User'
-                });
-            }
-            return res.json(User);
-        });
+        })
+
     },
 
     /**
@@ -76,49 +96,56 @@ module.exports = {
      * UserController.create()
      */
     create: function (req, res) {
-        let hashedPassword = bcrypt.hashSync(req.body.password, 8);
-        let today = new Date();
+        let token = req.headers['x-access-token'];
 
-        let newUser = new UserModel({
-            name: req.body.name,
-            email: req.body.email,
-            password: hashedPassword,
-            user_created: today,
-            last_login: today,
-            subscribed: req.body.subscribed ? req.body.subscribed : false,
-            admin: req.body.admin ? req.body.admin : false
-        });
-
-        UserModel.findOne({ email: req.body.email }, function (err, User) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when creating user.',
-                    error: err
-                });
-            }
-            if (User != null) {
-                return res.status(409).json({
-                    message: 'A user with this email already exists',
-                });
+        verify.isAdmin(token).then(function (answer) {
+            if (!answer) {
+                res.status(401).send('User is not authorized to add lessons');
             }
             else {
-                User = newUser
-                User.save(function (err, User) {
+                let hashedPassword = bcrypt.hashSync(req.body.password, 8);
+                let today = new Date();
+
+                let newUser = new UserModel({
+                    name: req.body.name,
+                    email: req.body.email,
+                    password: hashedPassword,
+                    user_created: today,
+                    last_login: today,
+                    subscribed: req.body.subscribed ? req.body.subscribed : false,
+                    admin: req.body.admin ? req.body.admin : false
+                });
+
+                UserModel.findOne({ email: req.body.email }, function (err, User) {
                     if (err) {
                         return res.status(500).json({
-                            message: 'Error when creating User',
+                            message: 'Error when creating user.',
                             error: err
                         });
                     }
-                    var token = jwt.sign({ id: User._id }, config.secret, {
-                        expiresIn: 86400 // expires in 24 hours
-                    });
-                    return res.status(201).send({ auth: true, token: token });
+                    if (User != null) {
+                        return res.status(409).json({
+                            message: 'A user with this email already exists',
+                        });
+                    }
+                    else {
+                        User = newUser
+                        User.save(function (err, User) {
+                            if (err) {
+                                return res.status(500).json({
+                                    message: 'Error when creating User',
+                                    error: err
+                                });
+                            }
+                            var token = jwt.sign({ id: User._id }, config.secret, {
+                                expiresIn: 86400 // expires in 24 hours
+                            });
+                            return res.status(201).send({ auth: true, token: token });
+                        });
+                    }
                 });
             }
-        });
-
-
+        })
     },
 
     /**
@@ -148,51 +175,71 @@ module.exports = {
      * UserController.update()
      */
     update: function (req, res) {
-        var id = req.params.id;
-        UserModel.findOne({ _id: id }, function (err, User) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting User',
-                    error: err
-                });
-            }
-            if (!User) {
-                return res.status(404).json({
-                    message: 'No such User'
-                });
-            }
+        let token = req.headers['x-access-token'];
 
-            User.name = req.body.name ? req.body.name : User.name;
-            User.email = req.body.email ? req.body.email : User.email;
-            User.password = req.body.password ? req.body.password : User.password;
-            User.admin = req.body.admin ? req.body.admin : User.admin;
+        verify.isAdmin(token).then(function (answer) {
+            if (!answer) {
+                res.status(401).send('User is not authorized to add lessons');
+            }
+            else {
+                var id = req.params.id;
+                UserModel.findOne({ _id: id }, function (err, User) {
+                    if (err) {
+                        return res.status(500).json({
+                            message: 'Error when getting User',
+                            error: err
+                        });
+                    }
+                    if (!User) {
+                        return res.status(404).json({
+                            message: 'No such User'
+                        });
+                    }
 
-            User.save(function (err, User) {
-                if (err) {
-                    return res.status(500).json({
-                        message: 'Error when updating User.',
-                        error: err
+                    User.name = req.body.name ? req.body.name : User.name;
+                    User.email = req.body.email ? req.body.email : User.email;
+                    User.password = req.body.password ? req.body.password : User.password;
+                    User.admin = req.body.admin ? req.body.admin : User.admin;
+
+                    User.save(function (err, User) {
+                        if (err) {
+                            return res.status(500).json({
+                                message: 'Error when updating User.',
+                                error: err
+                            });
+                        }
+
+                        return res.json(User);
                     });
-                }
+                });
+            }
+        })
 
-                return res.json(User);
-            });
-        });
     },
 
     /**
      * UserController.remove()
      */
     remove: function (req, res) {
-        var id = req.params.id;
-        UserModel.findByIdAndRemove(id, function (err, User) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when deleting the User.',
-                    error: err
+        let token = req.headers['x-access-token'];
+
+        verify.isAdmin(token).then(function (answer) {
+            if (!answer) {
+                res.status(401).send('User is not authorized to add lessons');
+            }
+            else {
+                var id = req.params.id;
+                UserModel.findByIdAndRemove(id, function (err, User) {
+                    if (err) {
+                        return res.status(500).json({
+                            message: 'Error when deleting the User.',
+                            error: err
+                        });
+                    }
+                    return res.status(204).json();
                 });
             }
-            return res.status(204).json();
-        });
+        })
+
     }
 };
