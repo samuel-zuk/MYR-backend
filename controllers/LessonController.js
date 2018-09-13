@@ -98,7 +98,7 @@ module.exports = {
 
     verify.isAdmin(token).then(function (answer) {
       if (!answer) {
-        res.status(401).send('User is not authorized to add lessons');
+        res.status(401).send('Error 401: Not authorized');
       }
       else {
         LessonModel.findOne({ lessonNumber: req.body.lessonNumber }, function (err, Lesson) {
@@ -138,7 +138,7 @@ module.exports = {
 
     verify.isAdmin(token).then(function (answer) {
       if (!answer) {
-        res.status(401).send('User is not authorized to add lessons');
+        res.status(401).send('Error 401: Not authorized');
       }
       else {
         let id = req.params.id;
@@ -187,7 +187,7 @@ module.exports = {
 
     verify.isAdmin(token).then(function (answer) {
       if (!answer) {
-        res.status(401).send('User is not authorized to add lessons');
+        res.status(401).send('Error 401: Not authorized');
       }
       else {
         let lessonNumber = req.params.lessonNumber;
@@ -238,7 +238,7 @@ module.exports = {
 
     verify.isAdmin(token).then(function (answer) {
       if (!answer) {
-        res.status(401).send('User is not authorized to add lessons');
+        res.status(401).send('Error 401: Not authorized');
       }
       else {
         let id = req.params.id;
@@ -264,7 +264,7 @@ module.exports = {
 
     verify.isAdmin(token).then(function (answer) {
       if (!answer) {
-        res.status(401).send('User is not authorized to add lessons');
+        res.status(401).send('Error 401: Not authorized');
       }
       else {
         let lessonNumber = req.params.lessonNumber;

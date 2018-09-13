@@ -9,6 +9,8 @@ var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
 var config = require('../config/config');
 
+let verify = require('../authorization/verifyAuth.js');
+
 
 /**
  * UserController.js
@@ -152,6 +154,7 @@ module.exports = {
      * UserController.login()
      */
     login: function (req, res) {
+        let today = new Date();
         UserModel.findOne({ email: req.body.email }, function (err, User) {
             if (err) return res.status(500).send('Error on the server.');
             if (!User) return res.status(404).send('No user found.');
@@ -160,6 +163,7 @@ module.exports = {
             var token = jwt.sign({ id: User._id }, config.secret, {
                 expiresIn: 86400 // expires in 24 hours
             });
+            User.last_login = today;
             res.status(200).send({ auth: true, token: token });
         });
     },
