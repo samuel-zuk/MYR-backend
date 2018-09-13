@@ -1,4 +1,5 @@
 let LessonModel = require('../models/LessonModel.js');
+let verify = require('../authorization/verifyAuth.js');
 
 /**
  * LessonController.js
@@ -93,32 +94,39 @@ module.exports = {
       previous: req.body.previous
 
     });
-
-    LessonModel.findOne({ lessonNumber: req.body.lessonNumber }, function (err, Lesson) {
-      if (err) {
-        return res.status(500).json({
-          message: 'Error when getting Lesson.',
-          error: err
-        });
-      }
-      if (Lesson != null) {
-        return res.status(409).json({
-          message: 'A lesson with this lesson number already exists',
-        });
-      }
-      else {
-        Lesson = newLesson
-        Lesson.save(function (err, Lesson) {
-          if (err) {
-            return res.status(500).json({
-              message: 'Error when creating Lesson',
-              error: err
-            });
-          }
-          return res.status(201).json(Lesson);
-        });
-      }
-    });
+    let token = req.headers['x-access-token'];
+    //console.log(token);
+    //if (!verify.isAdmin(token)) {
+    if (false) {
+      res.status(401).send('User is not authorized to add lessons');
+    }
+    else {
+      LessonModel.findOne({ lessonNumber: req.body.lessonNumber }, function (err, Lesson) {
+        if (err) {
+          return res.status(500).json({
+            message: 'Error when creating lesson.',
+            error: err
+          });
+        }
+        if (Lesson != null) {
+          return res.status(409).json({
+            message: 'A lesson with this lesson number already exists',
+          });
+        }
+        else {
+          Lesson = newLesson
+          Lesson.save(function (err, Lesson) {
+            if (err) {
+              return res.status(500).json({
+                message: 'Error when creating Lesson',
+                error: err
+              });
+            }
+            return res.status(201).json(Lesson);
+          });
+        }
+      });
+    }
   },
 
   /**
