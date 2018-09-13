@@ -27,7 +27,7 @@ module.exports = {
 
         verify.isAdmin(token).then(function (answer) {
             if (!answer) {
-                res.status(401).send('User is not authorized to add lessons');
+                res.status(401).send('Error 401: Not authorized');
             }
             else {
                 UserModel.find(function (err, Users) {
@@ -52,7 +52,7 @@ module.exports = {
 
         verify.isAdmin(token).then(function (answer) {
             if (!answer) {
-                res.status(401).send('User is not authorized to add lessons');
+                res.status(401).send('Error 401: Not authorized');
             }
             else {
                 var id = req.params.id;
@@ -102,7 +102,7 @@ module.exports = {
 
         verify.isAdmin(token).then(function (answer) {
             if (!answer) {
-                res.status(401).send('User is not authorized to add lessons');
+                res.status(401).send('Error 401: Not authorized');
             }
             else {
                 let hashedPassword = bcrypt.hashSync(req.body.password, 8);
@@ -154,7 +154,6 @@ module.exports = {
      * UserController.login()
      */
     login: function (req, res) {
-        let today = new Date();
         UserModel.findOne({ email: req.body.email }, function (err, User) {
             if (err) return res.status(500).send('Error on the server.');
             if (!User) return res.status(404).send('No user found.');
@@ -163,7 +162,15 @@ module.exports = {
             var token = jwt.sign({ id: User._id }, config.secret, {
                 expiresIn: 86400 // expires in 24 hours
             });
-            User.last_login = today;
+            User.last_login = new Date();
+            User.save(function (err, User) {
+                if (err) {
+                    return res.status(500).json({
+                        message: 'Error when updating User.',
+                        error: err
+                    });
+                }
+            });
             res.status(200).send({ auth: true, token: token });
         });
     },
@@ -183,7 +190,7 @@ module.exports = {
 
         verify.isAdmin(token).then(function (answer) {
             if (!answer) {
-                res.status(401).send('User is not authorized to add lessons');
+                res.status(401).send('Error 401: Not authorized');
             }
             else {
                 var id = req.params.id;
@@ -229,7 +236,7 @@ module.exports = {
 
         verify.isAdmin(token).then(function (answer) {
             if (!answer) {
-                res.status(401).send('User is not authorized to add lessons');
+                res.status(401).send('Error 401: Not authorized');
             }
             else {
                 var id = req.params.id;
