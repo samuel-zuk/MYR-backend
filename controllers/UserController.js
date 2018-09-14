@@ -163,12 +163,12 @@ module.exports = {
                 expiresIn: 86400 // expires in 24 hours
             });
             User.last_login = new Date();
-            UserModel.save(function (err, User) {
+            User.save(function (err, User) {
                 if (err) {
-                    return res.status(500).json({
-                        message: 'Error when updating user.',
-                        error: err
-                    });
+                    //return res.status(500).json({
+                    //    message: 'Error when updating user.',
+                    //    error: err
+                    //});
                 }
             });
             res.status(200).send({ auth: true, token: token });
