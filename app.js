@@ -13,9 +13,8 @@ mongoose.connect(mongoDB, { useNewUrlParser: true });
 mongoose.Promise = global.Promise;
 
 //set the file paths for the routers
-let userRouter = require('./routes/UserRoutes');
-let lessonRouter = require('./routes/LessonRoutes');
-let indexRouter = require('./routes/IndexRoutes');
+let indexRouter = require('./apiv1/routes/IndexRoutes');
+let apiv1 = require('./apiv1/apiv1');
 
 //Get the default connection
 let db = mongoose.connection;
@@ -36,8 +35,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //sets the relative paths for the routers
-app.use('/apiv1/user', userRouter);
-app.use('/apiv1/lessons', lessonRouter);
+app.use('/apiv1/', apiv1);
 app.use('/', indexRouter);  //MUST BE THE LAST PATH IN THE LIST
 
 // catch 404 and forward to error handler
