@@ -6,7 +6,7 @@ let path = require('path');
 
 
 router.get('/*', function (req, res, next) {
-    res.sendFile(path.join(__dirname + '/../../public/about.html'))
+    res.sendFile(path.join(__dirname + '/../../about/about.html'))
 });
 
 module.exports = router;
