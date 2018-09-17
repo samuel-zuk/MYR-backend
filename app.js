@@ -14,7 +14,6 @@ mongoose.Promise = global.Promise;
 
 //set the file paths for the routers
 let indexRouter = require('./non-api/routes/IndexRoutes');
-let aboutRouter = require('./non-api/routes/AboutRoutes');
 let apiv1 = require('./apiv1/apiv1');
 
 //Get the default connection
@@ -36,7 +35,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //sets the relative paths for the routers
-app.use('/about/', aboutRouter);
 app.use('/apiv1/', apiv1);
 app.use('/', indexRouter);  //MUST BE THE LAST PATH IN THE LIST
 
