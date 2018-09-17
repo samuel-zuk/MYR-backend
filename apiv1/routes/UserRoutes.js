@@ -2,10 +2,18 @@ var express = require('express');
 var router = express.Router();
 var UserController = require('../controllers/UserController.js');
 
+const rateLimit = require("express-rate-limit");
+
+const secureAPILimiter = rateLimit({
+    windowMs: 2 * 60 * 1000,    // 2 minutes
+    max: 10                    // max number of requests
+});
+
+
 /*
  * GET
  */
-router.get('/', UserController.list);
+router.get('/', secureAPILimiter, UserController.list);
 
 /*
  * GET
@@ -15,31 +23,31 @@ router.get('/logout', UserController.logout);
 /*
  * GET
  */
-router.get('/profile', UserController.show_profile);
+router.get('/profile', secureAPILimiter, UserController.show_profile);
 
 /*
  * GET
  */
-router.get('/:id', UserController.show);
+router.get('/:id', secureAPILimiter, UserController.show);
 
 /*
  * POST
  */
-router.post('/register', UserController.create);
+router.post('/register', secureAPILimiter, UserController.create);
 
 /*
  * POST
  */
-router.post('/login', UserController.login);
+router.post('/login', secureAPILimiter, UserController.login);
 
 /*
  * PUT
  */
-router.put('/:id', UserController.update);
+router.put('/:id', secureAPILimiter, UserController.update);
 
 /*
  * DELETE
  */
-router.delete('/:id', UserController.remove);
+router.delete('/:id', secureAPILimiter, UserController.remove);
 
 module.exports = router;
