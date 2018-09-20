@@ -63,12 +63,7 @@ jobs: # a collection of steps
             - ./node_modules
       - run: # run server
           name: Start server
-          command: 
-          :-|
-          :npm start
-          :if [ $EXIT -ne 0 ]; then
-          :exit 1
-          :fi
+          command: set -e && npm start
           background: true
       - run: # wait for server to start
           name: making sure server had time to start
