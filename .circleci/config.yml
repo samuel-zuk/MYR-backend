@@ -63,7 +63,7 @@ jobs: # a collection of steps
             - ./node_modules
       - run: # run server
           name: Start server
-          command: set -e && npm start
+          command: set -eo pipefail && npm start
           background: true
       - run: # wait for server to start
           name: making sure server had time to start
