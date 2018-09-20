@@ -10,7 +10,7 @@ jobs:
       # specify the version you desire here
       - image: circleci/node:10.9
 
-      - image: mongo:3.6.7-ram
+      - image: mongo:3.6.7-stretch-ram
       
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
