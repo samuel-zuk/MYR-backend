@@ -6,9 +6,3 @@ describe('Test the root path', () => {
         return request(app).get('/').expect(200);
     });
 })
-
-describe('Test for failure', () => {
-    test('It should response the GET method', () => {
-        return request(app).get('/').expect(404);
-    });
-})
