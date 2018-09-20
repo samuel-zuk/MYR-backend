@@ -65,10 +65,12 @@ jobs: # a collection of steps
           name: Start server
           command: npm start
           background: true
+      - run: # wait for server to start
+          name: making sure server had time to start
+          command: sleep 7500 && exit 0
       - run: # run tests
           name: test
           command: npm test
-          when: on_success
       # - run: # run coverage report
       #     name: code-coverage
       #     command: './node_modules/.bin/nyc report --reporter=text-lcov'
