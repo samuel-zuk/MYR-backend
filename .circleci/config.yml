@@ -67,7 +67,7 @@ jobs: # a collection of steps
           background: true
       - run: # wait for server to start
           name: making sure server had time to start
-          command: sleep 7500 && exit 0
+          command: sleep 10 && exit 0
       - run: # run tests
           name: test
           command: npm test
