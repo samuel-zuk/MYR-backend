@@ -61,13 +61,14 @@ jobs: # a collection of steps
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
-      - run: # run tests
+      - deploy: # run server
           name: Start server
           command: npm start
           background: true
       - run: # run tests
           name: test
           command: npm test
+          when: on_success
       # - run: # run coverage report
       #     name: code-coverage
       #     command: './node_modules/.bin/nyc report --reporter=text-lcov'
