@@ -15,7 +15,7 @@ mongoose.Promise = global.Promise;
 //set the file paths for the routers
 let indexRouter = require('./non-api/routes/IndexRoutes');
 let apiv1 = require('./apiv1/apiv1');
-
+jkbdjbl
 //Get the default connection
 let db = mongoose.connection;
 
