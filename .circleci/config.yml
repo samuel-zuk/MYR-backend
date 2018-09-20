@@ -70,7 +70,7 @@ jobs: # a collection of steps
           command: sleep 15
       - run: # run tests
           name: test
-          command: echo "Not working yet"
+          command: npm test
       # - run: # run coverage report
       #     name: code-coverage
       #     command: './node_modules/.bin/nyc report --reporter=text-lcov'
