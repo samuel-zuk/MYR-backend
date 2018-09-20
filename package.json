@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "commander": "^2.18.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "^4.16.3",
@@ -17,8 +18,10 @@
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
     "jsonwebtoken": "^8.3.0",
+    "mocha": "^5.2.0",
     "mongoose": "^5.2.6",
-    "morgan": "^1.9.0"
+    "morgan": "^1.9.0",
+    "supertest": "^3.3.0"
   },
   "devDependencies": {
     "nodemon": "^1.18.3"
