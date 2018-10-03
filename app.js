@@ -15,6 +15,7 @@ mongoose.Promise = global.Promise;
 
 //set the file paths for the routers
 let indexRouter = require('./non-api/routes/IndexRoutes');
+let adminRouter = require('./non-api/routes/AdminRoutes');
 let apiv1 = require('./apiv1/apiv1');
 
 //Get the default connection
@@ -34,10 +35,24 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+
+
+//app.use('/admin', express.static(path.join(__dirname, 'public/admin')))
+//app.use(express.static(path.join(__dirname, 'public/myr')));
+app.use('/apiv1/', apiv1);
+// Admin paths
+app.use('/admin/', express.static(path.join(__dirname, 'public/admin')))
+
+// Site path
+app.use(express.static(path.join(__dirname, 'public/myr')))
+// app.get('/*', function (req, res) {
+//     console.log(path.join(__dirname, './public/myr', 'index.html'))
+//     res.sendFile(path.join(__dirname, './public/myr', 'index.html'));
+// });
 
 //sets the relative paths for the routers
-app.use('/apiv1/', apiv1);
+
+app.use('/admin/', adminRouter);
 app.use('/', indexRouter);  //MUST BE THE LAST PATH IN THE LIST
 
 // catch 404 and forward to error handler
