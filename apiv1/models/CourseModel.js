@@ -5,7 +5,6 @@ let CourseSchema = new Schema({
 	'shortname': String,
 	'name': String,
 	'difficulty': Number,
-	'courseNumber': Number,
 	'description': String,
 	'lessons': Array
 });

@@ -6,8 +6,6 @@ router.get('/', CourseController.list);
 
 router.get('/:shortname', CourseController.show_via_shortname);
 
-router.get('/get/:courseNumber', CourseController.show_via_courseNumber);
-
 router.post('/', CourseController.create);
 
 router.put('/:id', CourseController.update);
