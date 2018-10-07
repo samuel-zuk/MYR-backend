@@ -156,7 +156,7 @@ module.exports = {
     login: function (req, res) {
         UserModel.findOne({ email: req.body.email }, function (err, User) {
             if (err) return res.status(500).send('Error on the server.');
-            if (!User) return res.status(404).send('No user found.');
+            if (!User) return res.status(401).send({ auth: false, token: null });
             var passwordIsValid = bcrypt.compareSync(req.body.password, User.password);
             if (!passwordIsValid) return res.status(401).send({ auth: false, token: null });
             var token = jwt.sign({ id: User._id }, config.secret, {
