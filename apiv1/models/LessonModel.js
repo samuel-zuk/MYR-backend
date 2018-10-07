@@ -7,8 +7,8 @@ let LessonSchema = new Schema({
 	'prompt': String,
 	'code': String,
 	'categories': Array,
-	'next': Number,
-	'previous': Number
+	'next': String,
+	'previous': String
 });
 
 module.exports = mongoose.model('Lesson', LessonSchema);
