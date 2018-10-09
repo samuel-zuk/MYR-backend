@@ -211,6 +211,7 @@ module.exports = {
                     User.email = req.body.email ? req.body.email : User.email;
                     User.password = req.body.password ? req.body.password : User.password;
                     User.admin = req.body.admin ? req.body.admin : User.admin;
+                    User.subscribed = req.body.subscribed ? req.body.subscribed : User.subscribed;
 
                     User.save(function (err, User) {
                         if (err) {
