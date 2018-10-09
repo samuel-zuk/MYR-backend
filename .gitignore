@@ -15,6 +15,7 @@
 
 # database exports
 /dump
+dump.zip
 
 # misc
 .DS_Store
