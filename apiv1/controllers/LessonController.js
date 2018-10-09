@@ -135,10 +135,7 @@ module.exports = {
    */
   update: function (req, res) {
     let token = req.headers['x-access-token'];
-    console.log('*****');
-    console.log('token = ' + token);
-    console.log('*****');
-    console.log(req.body)
+
     verify.isAdmin(token).then(function (answer) {
       if (!answer) {
         res.status(401).send('Error 401: Not authorized');
@@ -166,8 +163,7 @@ module.exports = {
           Lesson.categories = req.body.categories ? req.body.categories : Lesson.categories;
           Lesson.next = req.body.next ? req.body.next : Lesson.next;
           Lesson.previous = req.body.previous ? req.body.previous : Lesson.previous;
-          console.log('*****');
-          console.log(Lesson)
+
           Lesson.save(function (err, Lesson) {
             if (err) {
               return res.status(500).json({
@@ -253,7 +249,7 @@ module.exports = {
               error: err
             });
           }
-          return res.status(200).json();
+          return res.status(200).json("Lesson deleted");
         });
       }
     })
