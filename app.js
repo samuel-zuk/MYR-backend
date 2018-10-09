@@ -7,7 +7,7 @@ var cors = require('cors');
 
 //sets the database connection details
 let mongoose = require('mongoose');
-let mongoDB = 'mongodb://127.0.0.1:27017/my_database';
+let mongoDB = 'mongodb://127.0.0.1:27017/ecg-myr';
 mongoose.connect(mongoDB, { useNewUrlParser: true });
 
 // Get Mongoose to use the global promise library
