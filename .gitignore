@@ -13,6 +13,9 @@
 # local config
 /config
 
+# database exports
+/dump
+
 # misc
 .DS_Store
 .env.local
