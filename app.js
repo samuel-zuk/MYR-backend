@@ -39,16 +39,17 @@ app.use(cookieParser());
 
 
 
-app.use('/admin/', express.static(path.join(__dirname, 'public/admin')))
+app.use('/admin/', express.static(path.join(__dirname, 'public/admin')));
+app.use('/about/', express.static(path.join(__dirname, 'public/about')));
 
 // Site path
 app.use(express.static(path.join(__dirname, 'public/myr')))
 
 //sets the relative paths for the routers
 app.use('/apiv1/', apiv1);
-app.use('/about', aboutRouter)
+app.use('/about', aboutRouter);
 app.use('/admin/', adminRouter);
-app.use('/', indexRouter);  //MUST BE THE LAST PATH IN THE LIST
+app.use('/*', indexRouter);  //MUST BE THE LAST PATH IN THE LIST
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

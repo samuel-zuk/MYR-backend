@@ -2,14 +2,25 @@ let express = require('express');
 let router = express.Router();
 let path = require('path');
 
-// /* GET CSS. */
-// router.get('/jdk_css.css', function (req, res, next) {
-//     res.sendFile(path.join(__dirname + '/../../public/about/jdk_css.css'))
-// });
+let options = {
+    root: __dirname + '/public/about/',
+    dotfiles: 'deny',
+    headers: {
+        'x-timestamp': Date.now(),
+        'x-sent': true
+    }
+
+}
+
 
 /* GET about page. */
-router.get('/*', function (req, res, next) {
-    res.sendFile(path.join(__dirname + '/../../public/about/index.html'))
+router.get('/:filename', function (req, res, next) {
+    let filename = req.params.filename;
+    res.sendfile(filename, options, function (err) {
+        if (err) {
+            next(err);
+        }
+    })
 });
 
 module.exports = router;

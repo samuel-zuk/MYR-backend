@@ -23,7 +23,7 @@ let defaultRouter = require('./routes/DefaultRoutes');
 //sets the relative paths for the routers
 apiv1.use('/users', apiLimiter, userRouter);
 apiv1.use('/lessons', apiLimiter, lessonRouter);
-apiv1.use('/course', apiLimiter, courseRouter);
+apiv1.use('/courses', apiLimiter, courseRouter);
 apiv1.use('/snapshots', snapshotLimiter, snapshotRouter);
 apiv1.use('/*', defaultRouter);
 
