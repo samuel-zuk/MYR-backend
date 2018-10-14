@@ -6,10 +6,12 @@ router.get('/', CourseController.list);
 
 router.get('/:shortname', CourseController.show_via_shortname);
 
+router.get('/id/:id', CourseController.show);
+
 router.post('/', CourseController.create);
 
-router.put('/:id', CourseController.update);
+router.put('/id/:id', CourseController.update);
 
-router.delete('/:id', CourseController.remove);
+router.delete('/id/:id', CourseController.remove);
 
 module.exports = router;
