@@ -47,7 +47,7 @@ app.use(express.static(path.join(__dirname, 'public/myr')))
 
 //sets the relative paths for the routers
 app.use('/apiv1/', apiv1);
-app.use('/about', aboutRouter);
+app.use('/about/', aboutRouter);
 app.use('/admin/', adminRouter);
 app.use('/*', indexRouter);  //MUST BE THE LAST PATH IN THE LIST
 
