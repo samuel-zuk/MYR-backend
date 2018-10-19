@@ -89,8 +89,7 @@ module.exports = {
             timestamp: req.body.timestamp,
             text: req.body.text,
             error: req.body.error
-        });
-
+        })
         SnapshotModel.findOne({ user: newSnapshot.user, timestamp: newSnapshot.timestamp }, function (err, Snapshot) {
             if (err) {
                 return res.status(500).json({
