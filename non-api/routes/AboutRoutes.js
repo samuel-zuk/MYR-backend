@@ -14,9 +14,9 @@ let options = {
 
 
 /* GET about page. */
-router.get('/:filename', function (req, res, next) {
+router.get('/:filename/**', function (req, res, next) {
     let filename = req.params.filename;
-    res.sendfile(filename, options, function (err) {
+    res.sendFile(filename, options, function (err) {
         if (err) {
             next(err);
         }

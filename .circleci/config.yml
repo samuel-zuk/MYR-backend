@@ -1,45 +1,3 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
-# version: 2
-
-# jobs:
-#   build:
-#     docker:
-#       # specify the version you desire here
-#       - image: circleci/node:10.9
-
-#       - image: mongo:3.6.7-stretch
-      
-#       # Specify service dependencies here if necessary
-#       # CircleCI maintains a library of pre-built images
-#       # documented at https://circleci.com/docs/2.0/circleci-images/
-#       # - image: circleci/mongo:3.4.4
-
-#     working_directory: ~/repo
-
-#     steps:
-#       - checkout
-
-#       # Download and cache dependencies
-#       - restore_cache:
-#           keys:
-#           - v1-dependencies-{{ checksum "package.json" }}
-#           # fallback to using the latest cache if no exact match is found
-#           - v1-dependencies-
-
-#       - run: npm install
-
-#       - save_cache:
-#           paths:
-#             - node_modules
-#           key: v1-dependencies-{{ checksum "package.json" }}
-        
-#       # run tests!
-#       - run: npm test
-
-
 version: 2 # use CircleCI 2.0
 jobs: # a collection of steps
   build: # runs not using Workflows must have a `build` job as entry point
@@ -61,13 +19,13 @@ jobs: # a collection of steps
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
-      - run: # run server
-          name: Start server
-          command: npm start
-          background: true
-      - run: # wait for server to start
-          name: making sure server had time to start
-          command: sleep 15
+    #   - run: # run server
+    #       name: Start server
+    #       command: npm start
+    #       background: true
+    #   - run: # wait for server to start
+    #       name: making sure server had time to start
+    #       command: sleep 15
       - run: # run tests
           name: test
           command: npm test

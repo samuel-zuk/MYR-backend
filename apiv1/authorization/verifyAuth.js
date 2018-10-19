@@ -13,7 +13,6 @@ module.exports = {
     isAdmin: async function (token) {
         let isUserAdmin = false;
         if (!token) {
-            console.log('There is no token');
             return false;
         }
 
