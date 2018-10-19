@@ -8,7 +8,8 @@
 
 # production
 /build
-/public
+/public/myr
+/public/admin
 
 # local config
 /config
