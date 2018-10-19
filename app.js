@@ -56,6 +56,18 @@ app.use(function (req, res, next) {
     next(createError(404));
 });
 
+// Handle 404
+app.use(function (req, res) {
+    res.status(404);
+    res.render('404.jade', { title: '404: File Not Found' });
+});
+
+// Handle 500
+app.use(function (error, req, res, next) {
+    res.status(500);
+    res.render('500.jade', { title: '500: Internal Server Error', error: error });
+});
+
 // error handler
 app.use(function (err, req, res, next) {
     // set locals, only providing error in development
