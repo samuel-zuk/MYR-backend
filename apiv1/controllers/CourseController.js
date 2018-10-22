@@ -1,5 +1,6 @@
 let CourseModel = require('../models/CourseModel.js');
 let verify = require('../authorization/verifyAuth.js');
+const request = require('superagent');
 
 /**
  * CourseController.js
@@ -37,6 +38,7 @@ module.exports = {
      */
     show: function (req, res) {
         let id = req.params.id;
+        let getLesson = req.query.getLesson ? req.query.getLesson : false;
         CourseModel.findOne({ _id: id }, function (err, Course) {
             if (err) {
                 return res.status(500).json({
@@ -49,7 +51,23 @@ module.exports = {
                     message: 'No such Course'
                 });
             }
-            return res.json(Course);
+            if (!getLesson) {
+                return res.json(Course);
+            }
+            request
+                .get('localhost:1337/apiv1/lessons/id/' + Course.lessons[0])
+                .then(response => {
+                    let firstLesson = { 'firstLesson': response.body }
+                    let returnCourse = { ...Course.toObject(), ...firstLesson };
+                    return res.json(returnCourse);
+                })
+                .catch(err => {
+                    // err.message, err.response
+                    console.log(err.message);
+                    console.log(err.response)
+                    return res.json(Course);
+                });
+
         });
     },
 
@@ -58,6 +76,7 @@ module.exports = {
      */
     show_via_shortname: function (req, res) {
         let shortname = req.params.shortname;
+        let getLesson = req.query.getLesson ? req.query.getLesson : false;
         CourseModel.findOne({ shortname: shortname }, function (err, Course) {
             if (err) {
                 return res.status(500).json({
@@ -70,7 +89,22 @@ module.exports = {
                     message: 'No such Course'
                 });
             }
-            return res.json(Course);
+            if (!getLesson) {
+                return res.json(Course);
+            }
+            request
+                .get('localhost:1337/apiv1/lessons/id/' + Course.lessons[0])
+                .then(response => {
+                    let firstLesson = { 'firstLesson': response.body }
+                    let returnCourse = { ...Course.toObject(), ...firstLesson };
+                    return res.json(returnCourse);
+                })
+                .catch(err => {
+                    // err.message, err.response
+                    console.log(err.message);
+                    console.log(err.response)
+                    return res.json(Course);
+                });
         });
     },
 

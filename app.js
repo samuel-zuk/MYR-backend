@@ -3,7 +3,7 @@ let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
-var cors = require('cors');
+let cors = require('cors');
 
 //sets the database connection details
 let mongoose = require('mongoose');
