@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var UserController = require('../controllers/UserController.js');
+let express = require('express');
+let router = express.Router();
+let UserController = require('../controllers/UserController.js');
 
 const rateLimit = require("express-rate-limit");
 
