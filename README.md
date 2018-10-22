@@ -11,4 +11,3 @@ This is the backend API for MYR. It controls database access and edits and file 
 
 ## ECG
 The [Engaging Computing Group](https://sites.uml.edu/engaging-computing) develops new technologies to enable learners—youth, teachers, undergraduates, and others—be creative in science, engineering, and computing,and studies how these technologies improve learning.
-
