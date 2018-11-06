@@ -16,9 +16,29 @@ module.exports = {
         let user = req.query.user ? { user: req.query.user } : null;
         let time = req.query.time ? { user: req.query.time } : null;
         let error = req.query.error ? { error: req.query.error } : null;
+
+        let range;
+        let pageSize;
+        let currentPage;
+        if (req.query.range != undefined) {
+            range = JSON.parse("\"" + req.query.range + "\"").split("[");
+            range.splice(0, 1);
+            range = range[0].split("]");
+            range.splice(1, 1);
+            range = range[0].split(",");
+            pageSize = range[1];
+            currentPage = range[0];
+        }
+        let filter
+        if (pageSize != undefined && currentPage != undefined) {
+            filter = {
+                'skip': (pageSize * (currentPage - 1)),
+                'limit': Number(pageSize)
+            }
+        }
         let queryParams = { ...user, ...time, ...error };
 
-        SnapshotModel.find(queryParams, function (err, Snapshot) {
+        SnapshotModel.find(queryParams, {}, filter, function (err, Snapshot) {
             if (err) {
                 return res.status(500).json({
                     message: 'Error when getting Snapshot.',
@@ -30,7 +50,14 @@ module.exports = {
                     message: 'No such Snapshot'
                 });
             }
-            return res.json(Snapshot);
+            SnapshotModel.count().exec(function (err, count) {
+                if (err) return next(err)
+                if (filter != undefined) {
+                    let range = ('lessons ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
+                    res.set('Content-Range', range);
+                }
+                return res.json(Snapshot);
+            })
         });
     },
 

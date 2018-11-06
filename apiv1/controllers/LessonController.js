@@ -17,9 +17,30 @@ module.exports = {
     let lessonNumber = req.query.lessonNumber ? { lessonNumber: req.query.lessonNumber } : null;
     let previous = req.query.previous ? { previous: req.query.previous } : null;
     let next = req.query.next ? { next: req.query.next } : null;
+
+    let range;
+    let pageSize;
+    let currentPage;
+    if (req.query.range != undefined) {
+      range = JSON.parse("\"" + req.query.range + "\"").split("[");
+      range.splice(0, 1);
+      range = range[0].split("]");
+      range.splice(1, 1);
+      range = range[0].split(",");
+      pageSize = range[1];
+      currentPage = range[0];
+    }
+    let filter
+    if (pageSize != undefined && currentPage != undefined) {
+      filter = {
+        'skip': (pageSize * (currentPage - 1)),
+        'limit': Number(pageSize)
+      }
+    }
+
     let queryParams = { ...category, ...lessonNumber, ...previous, ...next };
 
-    LessonModel.find(queryParams, function (err, Lesson) {
+    LessonModel.find(queryParams, {}, filter, function (err, Lesson) {
       if (err) {
         return res.status(500).json({
           message: 'Error when getting Lesson.',
@@ -31,7 +52,15 @@ module.exports = {
           message: 'No such Lesson'
         });
       }
-      return res.json(Lesson);
+      LessonModel.count().exec(function (err, count) {
+        if (err) return next(err)
+        if (filter != undefined) {
+          let range = ('lessons ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
+          res.set('Content-Range', range);
+        }
+
+        return res.json(Lesson);
+      })
     });
   },
 

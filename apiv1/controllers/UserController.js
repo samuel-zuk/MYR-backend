@@ -25,19 +25,47 @@ module.exports = {
     list: function (req, res) {
         let token = req.headers['x-access-token'];
 
+        let range;
+        let pageSize;
+        let currentPage;
+        if (req.query.range != undefined) {
+            range = JSON.parse("\"" + req.query.range + "\"").split("[");
+            range.splice(0, 1);
+            range = range[0].split("]");
+            range.splice(1, 1);
+            range = range[0].split(",");
+            pageSize = range[1];
+            currentPage = range[0];
+        }
+        let filter
+        if (pageSize != undefined && currentPage != undefined) {
+            filter = {
+                'skip': (pageSize * (currentPage - 1)),
+                'limit': Number(pageSize)
+            }
+        }
+        let queryParams = {};
+
         verify.isAdmin(token).then(function (answer) {
             if (!answer) {
                 res.status(401).send('Error 401: Not authorized');
             }
             else {
-                UserModel.find(function (err, Users) {
+                UserModel.find(queryParams, {}, filter, function (err, Users) {
                     if (err) {
                         return res.status(500).json({
                             message: 'Error when getting User.',
                             error: err
                         });
                     }
-                    return res.json(Users);
+                    UserModel.count().exec(function (err, count) {
+                        if (err) return next(err)
+                        if (filter != undefined) {
+                            let range = ('lessons ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
+                            res.set('Content-Range', range);
+                        }
+                        return res.json(Users);
+                    })
                 });
             }
         })
