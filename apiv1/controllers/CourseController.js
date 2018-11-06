@@ -17,7 +17,23 @@ module.exports = {
         let difficulty = req.query.difficulty ? { difficulty: req.query.difficulty } : null;
         let queryParams = { ...lessons, ...difficulty };
 
-        CourseModel.find(queryParams, function (err, Course) {
+        let range = JSON.parse("\"" + req.query.range + "\"").split("[");
+        range.splice(0, 1);
+        range = range[0].split("]");
+        range.splice(1, 1);
+        range = range[0].split(",");
+        let pageSize = range[1];
+        let currentPage = range[0];
+        let filter
+        if (pageSize != undefined && currentPage != undefined) {
+            filter = {
+                'skip': (pageSize * (currentPage - 1)),
+                'limit': Number(pageSize)
+            }
+        }
+        let queryParams = { ...user, ...time, ...error };
+
+        CourseModel.find(queryParams, {}, filter, function (err, Course) {
             if (err) {
                 return res.status(500).json({
                     message: 'Error when getting Course.',
@@ -29,7 +45,12 @@ module.exports = {
                     message: 'No such Course'
                 });
             }
-            return res.json(Course);
+            CourseModel.count().exec(function (err, count) {
+                if (err) return next(err)
+                let range = ('courses ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
+                res.set('Content-Range', range);
+                return res.json(Course);
+            })
         });
     },
 
