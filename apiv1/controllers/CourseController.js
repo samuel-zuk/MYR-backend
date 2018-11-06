@@ -1,6 +1,6 @@
 let CourseModel = require('../models/CourseModel.js');
+let LessonModel = require('../models/LessonModel.js');
 let verify = require('../authorization/verifyAuth.js');
-const request = require('superagent');
 
 /**
  * CourseController.js
@@ -54,20 +54,22 @@ module.exports = {
             if (!getLesson) {
                 return res.json(Course);
             }
-            request
-                .get('localhost:1337/apiv1/lessons/id/' + Course.lessons[0])
-                .then(response => {
-                    let firstLesson = { 'firstLesson': response.body }
-                    let returnCourse = { ...Course.toObject(), ...firstLesson };
-                    return res.json(returnCourse);
-                })
-                .catch(err => {
-                    // err.message, err.response
-                    console.log(err.message);
-                    console.log(err.response)
-                    return res.json(Course);
-                });
-
+            LessonModel.findOne({ _id: Course.lessons[0] }, function (err, Lesson) {
+                if (err) {
+                    return res.status(500).json({
+                        message: 'Error when getting course.',
+                        error: err
+                    });
+                }
+                if (!Lesson) {
+                    return res.status(404).json({
+                        message: 'Error when getting lesson'
+                    });
+                }
+                let firstLesson = { 'firstLesson': Lesson }
+                let returnCourse = { ...Course.toObject(), ...firstLesson };
+                return res.json(returnCourse);
+            });
         });
     },
 
@@ -92,19 +94,22 @@ module.exports = {
             if (!getLesson) {
                 return res.json(Course);
             }
-            request
-                .get('localhost:1337/apiv1/lessons/id/' + Course.lessons[0])
-                .then(response => {
-                    let firstLesson = { 'firstLesson': response.body }
-                    let returnCourse = { ...Course.toObject(), ...firstLesson };
-                    return res.json(returnCourse);
-                })
-                .catch(err => {
-                    // err.message, err.response
-                    console.log(err.message);
-                    console.log(err.response)
-                    return res.json(Course);
-                });
+            LessonModel.findOne({ _id: Course.lessons[0] }, function (err, Lesson) {
+                if (err) {
+                    return res.status(500).json({
+                        message: 'Error when getting course.',
+                        error: err
+                    });
+                }
+                if (!Lesson) {
+                    return res.status(404).json({
+                        message: 'Error when getting lesson'
+                    });
+                }
+                let firstLesson = { 'firstLesson': Lesson }
+                let returnCourse = { ...Course.toObject(), ...firstLesson };
+                return res.json(returnCourse);
+            });
         });
     },
 
