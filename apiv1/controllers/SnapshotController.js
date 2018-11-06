@@ -54,13 +54,8 @@ module.exports = {
             }
             SnapshotModel.count().exec(function (err, count) {
                 if (err) return next(err)
-                //console.log(count);
-                res.set('Bob', 'yes')
                 let range = ('snapshots ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
                 res.set('Content-Range', range);
-                //console.log(Snapshot);
-                //console.log(Object.values(Snapshot))
-                //res.set('Help', range)
                 return res.json(Snapshot);
             })
         });

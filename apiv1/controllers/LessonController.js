@@ -19,7 +19,23 @@ module.exports = {
     let next = req.query.next ? { next: req.query.next } : null;
     let queryParams = { ...category, ...lessonNumber, ...previous, ...next };
 
-    LessonModel.find(queryParams, function (err, Lesson) {
+    let range = JSON.parse("\"" + req.query.range + "\"").split("[");
+    range.splice(0, 1);
+    range = range[0].split("]");
+    range.splice(1, 1);
+    range = range[0].split(",");
+    let pageSize = range[1];
+    let currentPage = range[0];
+    let filter
+    if (pageSize != undefined && currentPage != undefined) {
+      filter = {
+        'skip': (pageSize * (currentPage - 1)),
+        'limit': Number(pageSize)
+      }
+    }
+    let queryParams = { ...user, ...time, ...error };
+
+    LessonModel.find(queryParams, {}, filter, function (err, Lesson) {
       if (err) {
         return res.status(500).json({
           message: 'Error when getting Lesson.',
@@ -31,7 +47,12 @@ module.exports = {
           message: 'No such Lesson'
         });
       }
-      return res.json(Lesson);
+      LessonModel.count().exec(function (err, count) {
+        if (err) return next(err)
+        let range = ('lessons ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
+        res.set('Content-Range', range);
+        return res.json(Lesson);
+      })
     });
   },
 

@@ -25,6 +25,22 @@ module.exports = {
     list: function (req, res) {
         let token = req.headers['x-access-token'];
 
+        let range = JSON.parse("\"" + req.query.range + "\"").split("[");
+        range.splice(0, 1);
+        range = range[0].split("]");
+        range.splice(1, 1);
+        range = range[0].split(",");
+        let pageSize = range[1];
+        let currentPage = range[0];
+        let filter
+        if (pageSize != undefined && currentPage != undefined) {
+            filter = {
+                'skip': (pageSize * (currentPage - 1)),
+                'limit': Number(pageSize)
+            }
+        }
+        let queryParams = { ...user, ...time, ...error };
+
         verify.isAdmin(token).then(function (answer) {
             if (!answer) {
                 res.status(401).send('Error 401: Not authorized');
@@ -37,7 +53,12 @@ module.exports = {
                             error: err
                         });
                     }
-                    return res.json(Users);
+                    UserModel.count().exec(function (err, count) {
+                        if (err) return next(err)
+                        let range = ('users ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
+                        res.set('Content-Range', range);
+                        return res.json(Users);
+                    })
                 });
             }
         })
