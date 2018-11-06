@@ -16,29 +16,27 @@ module.exports = {
         let user = req.query.user ? { user: req.query.user } : null;
         let time = req.query.time ? { user: req.query.time } : null;
         let error = req.query.error ? { error: req.query.error } : null;
-        let range = JSON.parse("\"" + req.query.range + "\"").split("[");
-        range.splice(0, 1);
-        range = range[0].split("]");
-        range.splice(1, 1);
-        range = range[0].split(",");
-        let pageSize = range[1];
-        let currentPage = range[0];
-        //console.log('Page size: ' + pageSize)
-        //console.log('Current page: ' + currentPage)
+
+        let range;
+        let pageSize;
+        let currentPage;
+        if (req.query.range != undefined) {
+            range = JSON.parse("\"" + req.query.range + "\"").split("[");
+            range.splice(0, 1);
+            range = range[0].split("]");
+            range.splice(1, 1);
+            range = range[0].split(",");
+            pageSize = range[1];
+            currentPage = range[0];
+        }
         let filter
         if (pageSize != undefined && currentPage != undefined) {
             filter = {
                 'skip': (pageSize * (currentPage - 1)),
                 'limit': Number(pageSize)
             }
-            //console.log('***')
-            //console.log('Content-Range', ('snapshots ' + filter.skip + '-' + filter.limit + filter.skip))
-            //res.set('Content-Range', ('snapshots ' + filter.skip + '-' + filter.limit + filter.skip));
         }
-        //let filter = { ...skip, ...limit };
         let queryParams = { ...user, ...time, ...error };
-        //console.log(queryParams)
-        //console.log(filter)
 
         SnapshotModel.find(queryParams, {}, filter, function (err, Snapshot) {
             if (err) {
@@ -54,8 +52,10 @@ module.exports = {
             }
             SnapshotModel.count().exec(function (err, count) {
                 if (err) return next(err)
-                let range = ('snapshots ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
-                res.set('Content-Range', range);
+                if (filter != undefined) {
+                    let range = ('lessons ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
+                    res.set('Content-Range', range);
+                }
                 return res.json(Snapshot);
             })
         });

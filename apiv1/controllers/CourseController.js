@@ -15,15 +15,19 @@ module.exports = {
     list: function (req, res) {
         let lessons = req.query.lessons ? { lessons: req.query.lessons } : null;
         let difficulty = req.query.difficulty ? { difficulty: req.query.difficulty } : null;
-        let queryParams = { ...lessons, ...difficulty };
 
-        let range = JSON.parse("\"" + req.query.range + "\"").split("[");
-        range.splice(0, 1);
-        range = range[0].split("]");
-        range.splice(1, 1);
-        range = range[0].split(",");
-        let pageSize = range[1];
-        let currentPage = range[0];
+        let range;
+        let pageSize;
+        let currentPage;
+        if (req.query.range != undefined) {
+            range = JSON.parse("\"" + req.query.range + "\"").split("[");
+            range.splice(0, 1);
+            range = range[0].split("]");
+            range.splice(1, 1);
+            range = range[0].split(",");
+            pageSize = range[1];
+            currentPage = range[0];
+        }
         let filter
         if (pageSize != undefined && currentPage != undefined) {
             filter = {
@@ -31,7 +35,8 @@ module.exports = {
                 'limit': Number(pageSize)
             }
         }
-        let queryParams = { ...user, ...time, ...error };
+
+        let queryParams = { ...lessons, ...difficulty };
 
         CourseModel.find(queryParams, {}, filter, function (err, Course) {
             if (err) {
@@ -47,8 +52,10 @@ module.exports = {
             }
             CourseModel.count().exec(function (err, count) {
                 if (err) return next(err)
-                let range = ('courses ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
-                res.set('Content-Range', range);
+                if (filter != undefined) {
+                    let range = ('lessons ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
+                    res.set('Content-Range', range);
+                }
                 return res.json(Course);
             })
         });
