@@ -16,9 +16,31 @@ module.exports = {
         let user = req.query.user ? { user: req.query.user } : null;
         let time = req.query.time ? { user: req.query.time } : null;
         let error = req.query.error ? { error: req.query.error } : null;
+        let range = JSON.parse("\"" + req.query.range + "\"").split("[");
+        range.splice(0, 1);
+        range = range[0].split("]");
+        range.splice(1, 1);
+        range = range[0].split(",");
+        let pageSize = range[1];
+        let currentPage = range[0];
+        //console.log('Page size: ' + pageSize)
+        //console.log('Current page: ' + currentPage)
+        let filter
+        if (pageSize != undefined && currentPage != undefined) {
+            filter = {
+                'skip': (pageSize * (currentPage - 1)),
+                'limit': Number(pageSize)
+            }
+            //console.log('***')
+            //console.log('Content-Range', ('snapshots ' + filter.skip + '-' + filter.limit + filter.skip))
+            //res.set('Content-Range', ('snapshots ' + filter.skip + '-' + filter.limit + filter.skip));
+        }
+        //let filter = { ...skip, ...limit };
         let queryParams = { ...user, ...time, ...error };
+        //console.log(queryParams)
+        //console.log(filter)
 
-        SnapshotModel.find(queryParams, function (err, Snapshot) {
+        SnapshotModel.find(queryParams, {}, filter, function (err, Snapshot) {
             if (err) {
                 return res.status(500).json({
                     message: 'Error when getting Snapshot.',
@@ -30,7 +52,17 @@ module.exports = {
                     message: 'No such Snapshot'
                 });
             }
-            return res.json(Snapshot);
+            SnapshotModel.count().exec(function (err, count) {
+                if (err) return next(err)
+                //console.log(count);
+                res.set('Bob', 'yes')
+                let range = ('snapshots ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
+                res.set('Content-Range', range);
+                //console.log(Snapshot);
+                //console.log(Object.values(Snapshot))
+                //res.set('Help', range)
+                return res.json(Snapshot);
+            })
         });
     },
 
