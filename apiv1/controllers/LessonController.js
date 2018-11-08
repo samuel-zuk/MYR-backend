@@ -58,7 +58,6 @@ module.exports = {
           let range = ('lessons ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
           res.set('Content-Range', range);
         }
-
         return res.json(Lesson);
       })
     });
