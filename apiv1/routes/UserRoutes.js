@@ -6,7 +6,7 @@ const rateLimit = require("express-rate-limit");
 
 const secureAPILimiter = rateLimit({
     windowMs: 2 * 60 * 1000,    // 2 minutes
-    max: 10                    // max number of requests
+    max: 200                    // max number of requests
 });
 
 
