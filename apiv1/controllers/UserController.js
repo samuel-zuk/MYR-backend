@@ -237,7 +237,9 @@ module.exports = {
 
                     User.name = req.body.name ? req.body.name : User.name;
                     User.email = req.body.email ? req.body.email : User.email;
-                    User.password = req.body.password ? bcrypt.hashSync(req.body.password, 8) : User.password;
+                    if (req.body.password != undefined && req.body.password != User.password) {
+                        User.password = req.body.password ? bcrypt.hashSync(req.body.password, 8) : User.password;
+                    }
                     User.admin = req.body.admin ? req.body.admin : User.admin;
                     User.subscribed = req.body.subscribed ? req.body.subscribed : User.subscribed;
 
