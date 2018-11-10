@@ -199,7 +199,7 @@ module.exports = {
                     //});
                 }
             });
-            res.status(200).send({ auth: true, token: token });
+            res.status(200).send({ auth: true, isAdmin: User.admin, token: token });
         });
     },
 
