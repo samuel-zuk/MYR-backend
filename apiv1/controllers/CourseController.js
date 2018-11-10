@@ -213,7 +213,7 @@ module.exports = {
                         });
                     }
 
-                    Course = { ...Course, }
+                    //Course = { ...Course, }
                     Course.name = req.body.name ? req.body.name : Course.name;
                     Course.shortname = req.body.shortname ? req.body.shortname : Course.shortname;
                     Course.lessons = req.body.lessons ? req.body.lessons : Course.lessons;
@@ -301,7 +301,7 @@ module.exports = {
                             error: err
                         });
                     }
-                    return res.status(200).json();
+                    return res.status(200).json(Course);
                 });
             }
         })
