@@ -112,7 +112,7 @@ module.exports = {
    * Will not allow duplicate lesson numbers
    */
   create: function (req, res) {
-    let newLesson = new LessonModel({
+    let Lesson = new LessonModel({
       lessonNumber: req.body.lessonNumber,
       name: req.body.name,
       prompt: req.body.prompt,
@@ -129,30 +129,14 @@ module.exports = {
         res.status(401).send('Error 401: Not authorized');
       }
       else {
-        LessonModel.findOne({ lessonNumber: req.body.lessonNumber }, function (err, Lesson) {
+        Lesson.save(function (err, Lesson) {
           if (err) {
             return res.status(500).json({
-              message: 'Error when creating lesson.',
+              message: 'Error when creating Lesson',
               error: err
             });
           }
-          if (Lesson != null) {
-            return res.status(409).json({
-              message: 'A lesson with this lesson number already exists',
-            });
-          }
-          else {
-            Lesson = newLesson
-            Lesson.save(function (err, Lesson) {
-              if (err) {
-                return res.status(500).json({
-                  message: 'Error when creating Lesson',
-                  error: err
-                });
-              }
-              return res.status(201).json(Lesson);
-            });
-          }
+          return res.status(201).json(Lesson);
         });
       }
     })
@@ -277,7 +261,7 @@ module.exports = {
               error: err
             });
           }
-          return res.status(200).json("Lesson deleted");
+          return res.status(200).json(Lesson);
         });
       }
     })
