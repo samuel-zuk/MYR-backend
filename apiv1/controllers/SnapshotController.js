@@ -149,7 +149,7 @@ module.exports = {
      */
     remove: function (req, res) {
         let token = req.headers['x-access-token'];
-
+        return res.status(401).send();
         // verify.isAdmin(token).then(function (answer) {
         //     if (!answer) {
         //         res.status(401).send('Error 401: Not authorized');
@@ -175,24 +175,24 @@ module.exports = {
      */
     remove_via_snapshotNumber: function (req, res) {
         let token = req.headers['x-access-token'];
-
-        verify.isAdmin(token).then(function (answer) {
-            if (!answer) {
-                res.status(401).send('Error 401: Not authorized');
-            }
-            else {
-                let snapshotNumber = req.params.snapshotNumber;
-                SnapshotModel.deleteOne({ snapshotNumber: snapshotNumber }, function (err, Snapshot) {
-                    if (err) {
-                        return res.status(500).json({
-                            message: 'Error when deleting the Snapshot.',
-                            error: err
-                        });
-                    }
-                    return res.status(200).json();
-                });
-            }
-        })
+        return res.status(401).send();
+        // verify.isAdmin(token).then(function (answer) {
+        //     if (!answer) {
+        //         res.status(401).send('Error 401: Not authorized');
+        //     }
+        //     else {
+        //         let snapshotNumber = req.params.snapshotNumber;
+        //         SnapshotModel.deleteOne({ snapshotNumber: snapshotNumber }, function (err, Snapshot) {
+        //             if (err) {
+        //                 return res.status(500).json({
+        //                     message: 'Error when deleting the Snapshot.',
+        //                     error: err
+        //                 });
+        //             }
+        //             return res.status(200).json();
+        //         });
+        //     }
+        // })
 
     }
 };
