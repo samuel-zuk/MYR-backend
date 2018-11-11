@@ -23,6 +23,14 @@ router.get('/', SnapshotController.list);
 /*
  * Gets the snapshot with the corresponding snapshot number
  */
+router.get('/id/:id', SnapshotController.show);
+
+/*
+ * GET
+ */
+/*
+ * Gets the snapshot with the corresponding snapshot number
+ */
 router.get('/:user/:timestamp', SnapshotController.show_via_details);
 
 /*
