@@ -16,9 +16,19 @@ module.exports = {
         let lessons = req.query.lessons ? { lessons: req.query.lessons } : null;
         let difficulty = req.query.difficulty ? { difficulty: req.query.difficulty } : null;
 
+        let filter;
+        // let sort;
         let range;
         let pageSize;
         let currentPage;
+        let docConditions;
+        let pageRange;
+        if (req.query.filter != undefined) {
+            filter = JSON.parse(req.query.filter);
+        }
+        // if (req.query.sort != undefined) {
+        //     sort = JSON.parse(req.query.sort);
+        // }
         if (req.query.range != undefined) {
             range = JSON.parse("\"" + req.query.range + "\"").split("[");
             range.splice(0, 1);
@@ -28,17 +38,18 @@ module.exports = {
             pageSize = range[1];
             currentPage = range[0];
         }
-        let filter
         if (pageSize != undefined && currentPage != undefined) {
-            filter = {
+            pageRange = {
                 'skip': (pageSize * (currentPage - 1)),
                 'limit': Number(pageSize)
             }
         }
 
-        let queryParams = { ...lessons, ...difficulty };
+        docConditions = { ...pageRange };
 
-        CourseModel.find(queryParams, {}, filter, function (err, Course) {
+        let queryParams = { ...lessons, ...difficulty, ...filter };
+
+        CourseModel.find(queryParams, {}, docConditions, function (err, Course) {
             if (err) {
                 return res.status(500).json({
                     message: 'Error when getting Course.',
@@ -50,12 +61,9 @@ module.exports = {
                     message: 'No such Course'
                 });
             }
-            CourseModel.count().exec(function (err, count) {
+            CourseModel.countDocuments(queryParams).exec(function (err, count) {
                 if (err) return next(err)
-                if (filter != undefined) {
-                    let range = ('lessons ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
-                    res.set('Content-Range', range);
-                }
+                res.set('Total-Documents', count);
                 return res.json(Course);
             })
         });

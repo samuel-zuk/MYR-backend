@@ -52,12 +52,9 @@ module.exports = {
           message: 'No such Lesson'
         });
       }
-      LessonModel.count().exec(function (err, count) {
+      LessonModel.countDocuments().exec(function (err, count) {
         if (err) return next(err)
-        if (filter != undefined) {
-          let range = ('lessons ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
-          res.set('Content-Range', range);
-        }
+        res.set('Total-Documents', count);
         return res.json(Lesson);
       })
     });

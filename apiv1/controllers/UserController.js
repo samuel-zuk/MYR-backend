@@ -25,9 +25,19 @@ module.exports = {
     list: function (req, res) {
         let token = req.headers['x-access-token'];
 
+        let filter;
+        // let sort;
         let range;
         let pageSize;
         let currentPage;
+        let docConditions;
+        let pageRange;
+        if (req.query.filter != undefined) {
+            filter = JSON.parse(req.query.filter);
+        }
+        // if (req.query.sort != undefined) {
+        //     sort = JSON.parse(req.query.sort);
+        // }
         if (req.query.range != undefined) {
             range = JSON.parse("\"" + req.query.range + "\"").split("[");
             range.splice(0, 1);
@@ -37,33 +47,31 @@ module.exports = {
             pageSize = range[1];
             currentPage = range[0];
         }
-        let filter
         if (pageSize != undefined && currentPage != undefined) {
-            filter = {
+            pageRange = {
                 'skip': (pageSize * (currentPage - 1)),
                 'limit': Number(pageSize)
             }
         }
-        let queryParams = {};
+
+        docConditions = { ...pageRange };
+        let queryParams = { ...filter };
 
         verify.isAdmin(token).then(function (answer) {
             if (!answer) {
                 res.status(401).send('Error 401: Not authorized');
             }
             else {
-                UserModel.find(queryParams, {}, filter, function (err, Users) {
+                UserModel.find(queryParams, {}, docConditions, function (err, Users) {
                     if (err) {
                         return res.status(500).json({
                             message: 'Error when getting User.',
                             error: err
                         });
                     }
-                    UserModel.count().exec(function (err, count) {
+                    UserModel.countDocuments(queryParams).exec(function (err, count) {
                         if (err) return next(err)
-                        if (filter != undefined) {
-                            let range = ('lessons ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
-                            res.set('Content-Range', range);
-                        }
+                        res.set('Total-Documents', count);
                         return res.json(Users);
                     })
                 });
@@ -240,8 +248,8 @@ module.exports = {
                     if (req.body.password != undefined && req.body.password != User.password) {
                         User.password = req.body.password ? bcrypt.hashSync(req.body.password, 8) : User.password;
                     }
-                    User.admin = req.body.admin ? req.body.admin : User.admin;
-                    User.subscribed = req.body.subscribed ? req.body.subscribed : User.subscribed;
+                    User.admin = req.body.admin != null ? req.body.admin : User.admin;
+                    User.subscribed = req.body.subscribed != null ? req.body.subscribed : User.subscribed;
 
                     User.save(function (err, User) {
                         if (err) {
