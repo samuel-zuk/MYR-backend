@@ -17,9 +17,19 @@ module.exports = {
         let time = req.query.time ? { user: req.query.time } : null;
         let error = req.query.error ? { error: req.query.error } : null;
 
+        let filter;
+        // let sort;
         let range;
         let pageSize;
         let currentPage;
+        let docConditions;
+        let pageRange;
+        if (req.query.filter != undefined) {
+            filter = JSON.parse(req.query.filter);
+        }
+        // if (req.query.sort != undefined) {
+        //     sort = JSON.parse(req.query.sort);
+        // }
         if (req.query.range != undefined) {
             range = JSON.parse("\"" + req.query.range + "\"").split("[");
             range.splice(0, 1);
@@ -29,16 +39,18 @@ module.exports = {
             pageSize = range[1];
             currentPage = range[0];
         }
-        let filter
         if (pageSize != undefined && currentPage != undefined) {
-            filter = {
+            pageRange = {
                 'skip': (pageSize * (currentPage - 1)),
                 'limit': Number(pageSize)
             }
         }
-        let queryParams = { ...user, ...time, ...error };
 
-        SnapshotModel.find(queryParams, {}, filter, function (err, Snapshot) {
+        docConditions = { ...pageRange };
+
+        let queryParams = { ...user, ...time, ...error, ...filter };
+
+        SnapshotModel.find(queryParams, {}, docConditions, function (err, Snapshot) {
             if (err) {
                 return res.status(500).json({
                     message: 'Error when getting Snapshot.',
@@ -50,12 +62,9 @@ module.exports = {
                     message: 'No such Snapshot'
                 });
             }
-            SnapshotModel.count().exec(function (err, count) {
+            SnapshotModel.countDocuments(queryParams).exec(function (err, count) {
                 if (err) return next(err)
-                if (filter != undefined) {
-                    let range = ('lessons ' + filter.skip + '-' + filter.limit * (filter.skip + 1) + '/' + count);
-                    res.set('Content-Range', range);
-                }
+                res.set('Total-Documents', count);
                 return res.json(Snapshot);
             })
         });
