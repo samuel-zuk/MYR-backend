@@ -12,7 +12,7 @@ jobs: # a collection of steps
           command: 'sudo apt-get install mongodb-clients'
       - run:
           name: mongo-test-db
-          command: 'mongorestore -d ecg-myr __tests__/resources'
+          command: 'mongorestore -d ecg-myr __tests__/mongo'
       - run:
           name: update-npm 
           command: 'sudo npm install -g npm@latest'
