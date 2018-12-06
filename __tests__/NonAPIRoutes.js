@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require('../app');
+const assert = require('assert');
 
 describe('Test the root path', () => {
     test('It should respond with HTTP status 200', () => {
@@ -47,6 +48,14 @@ describe('Test the team page path', () => {
         return request(app)
             .get('/about/team/')
             .expect(200);
+    });
+});
+
+describe('Test the admin portal path for 301', () => {
+    test('It should respond with HTTP status 301', () => {
+        return request(app)
+            .get('/admin').
+            expect(301);
     });
 });
 

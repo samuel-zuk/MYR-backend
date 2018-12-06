@@ -9,7 +9,7 @@ describe('Test the apiv1 get path', () => {
             .expect(404)
             .then(response => {
                 assert(response.body.message ===
-                    'Welcome to the MYR backend API.');
+                    'The path you are calling is not defined in this API.');
             });
     });
 });
@@ -50,17 +50,16 @@ describe('Test the apiv1 delete path with a random location', () => {
     });
 });
 
-// describe('Test the apiv1 get path with a random location', () => {
-//     test('It should respond with HTTP status 404', () => {
-//         return request(app).get('/apiv1/bobross/me')
-//             .expect(404)
-//             .then(response => {
-//                 console.log(response.body)
-//                 assert(response.body.message ===
-//                     'The path you are calling is not defined in this API.');
-//             });
-//     });
-// });
+describe('Test the apiv1 get path with a random location', () => {
+    test('It should respond with HTTP status 404', () => {
+        return request(app).get('/apiv1/bobross/me')
+            .expect(404)
+            .then(response => {
+                assert(response.body.message ===
+                    'The path you are calling is not defined in this API.');
+            });
+    });
+});
 
 describe('Test the apiv1 post path with a random location', () => {
     test('It should respond with HTTP status 404', () => {
@@ -98,17 +97,16 @@ describe('Test the apiv1 delete path with a random location', () => {
     });
 });
 
-// describe('Test the apiv1 get path with a double random location', () => {
-//     test('It should respond with HTTP status 404', () => {
-//         return request(app).get('/apiv1/bobross')
-//             .expect(404)
-//             .then(response => {
-//                 console.log(response.body)
-//                 assert(response.body.message ===
-//                     'The path you are calling is not defined in this API.');
-//             });
-//     });
-// });
+describe('Test the apiv1 get path with a double random location', () => {
+    test('It should respond with HTTP status 404', () => {
+        return request(app).get('/apiv1/bobross')
+            .expect(404)
+            .then(response => {
+                assert(response.body.message ===
+                    'The path you are calling is not defined in this API.');
+            });
+    });
+});
 
 describe('Test the apiv1 post path with a double random location', () => {
     test('It should respond with HTTP status 404', () => {

@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('./../app');
-let assert = require('assert');
+const assert = require('assert');
 
 describe('Test the users get path without token', () => {
     test('It should respond with HTTP status 401', () => {
