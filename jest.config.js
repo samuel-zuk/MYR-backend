@@ -2,8 +2,8 @@
 // https://jestjs.io/docs/en/configuration.html
 
 module.exports = {
-  coverageDirectory: "coverage",
   testEnvironment: "node",
+  // collectCoverage: true
   // globalSetup: './setup/jest/setup.js',
   // globalTeardown: './setup/jest/teardown.js',
   // testEnvironment: './setup/jest/mongo-environment.js'

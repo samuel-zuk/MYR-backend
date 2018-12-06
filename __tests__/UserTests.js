@@ -14,10 +14,10 @@ describe('Test admin user login', () => {
         return request(app).post('/apiv1/users/login')
             .send({ email: 'test_db@learnmyr.org', password: 'testing123' })
             .expect(200)
-            .expect(function (res) {
-                assert(res.body.auth === true);
-            }).expect(function (res) {
-                assert(res.body.isAdmin === true);
+            .then(response => {
+                assert(response.body.auth === true);
+                assert(response.body.isAdmin === true);
+                assert(response.body.token != null);
             });
     });
 });
