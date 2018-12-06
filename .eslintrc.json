@@ -1,0 +1,11 @@
+{
+    "parser": "babel-eslint",
+    "rules": {
+        "semi": 1,
+        "curly": 1,
+        "no-lonely-if": 1,
+        "no-var": 1,
+        "no-new-object": 1,
+        "no-array-constructor": 1
+    }
+}

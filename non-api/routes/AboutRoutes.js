@@ -10,7 +10,7 @@ let options = {
         'x-sent': true
     }
 
-}
+};
 
 
 /* GET about page. */
@@ -20,7 +20,7 @@ router.get('/:filename/**', function (req, res, next) {
         if (err) {
             next(err);
         }
-    })
+    });
 });
 
 module.exports = router;

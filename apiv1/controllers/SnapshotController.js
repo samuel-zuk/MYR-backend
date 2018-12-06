@@ -43,7 +43,7 @@ module.exports = {
             pageRange = {
                 'skip': (pageSize * (currentPage - 1)),
                 'limit': Number(pageSize)
-            }
+            };
         }
 
         docConditions = { ...pageRange };
@@ -63,10 +63,12 @@ module.exports = {
                 });
             }
             SnapshotModel.countDocuments(queryParams).exec(function (err, count) {
-                if (err) return next(err)
+                if (err) {
+                    return next(err);
+                }
                 res.set('Total-Documents', count);
                 return res.json(Snapshot);
-            })
+            });
         });
     },
 
@@ -125,7 +127,7 @@ module.exports = {
             timestamp: req.body.timestamp,
             text: req.body.text,
             error: req.body.error
-        })
+        });
         SnapshotModel.findOne({ user: newSnapshot.user, timestamp: newSnapshot.timestamp }, function (err, Snapshot) {
             if (err) {
                 return res.status(500).json({
@@ -139,7 +141,7 @@ module.exports = {
                 });
             }
             else {
-                Snapshot = newSnapshot
+                Snapshot = newSnapshot;
                 Snapshot.save(function (err, Snapshot) {
                     if (err) {
                         return res.status(500).json({

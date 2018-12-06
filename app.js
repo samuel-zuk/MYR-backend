@@ -43,7 +43,7 @@ app.use('/admin/', express.static(path.join(__dirname, 'public/admin')));
 app.use('/about/', express.static(path.join(__dirname, 'public/about')));
 
 // Site path
-app.use(express.static(path.join(__dirname, 'public/myr')))
+app.use(express.static(path.join(__dirname, 'public/myr')));
 
 //sets the relative paths for the routers
 app.use('/apiv1/', apiv1);

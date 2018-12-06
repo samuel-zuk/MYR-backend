@@ -42,7 +42,7 @@ module.exports = {
             pageRange = {
                 'skip': (pageSize * (currentPage - 1)),
                 'limit': Number(pageSize)
-            }
+            };
         }
 
         docConditions = { ...pageRange };
@@ -62,10 +62,12 @@ module.exports = {
                 });
             }
             CourseModel.countDocuments(queryParams).exec(function (err, count) {
-                if (err) return next(err)
+                if (err) {
+                    return next(err);
+                }
                 res.set('Total-Documents', count);
                 return res.json(Course);
-            })
+            });
         });
     },
 
@@ -102,7 +104,7 @@ module.exports = {
                         message: 'Error when getting lesson'
                     });
                 }
-                let firstLesson = { 'firstLesson': Lesson }
+                let firstLesson = { 'firstLesson': Lesson };
                 let returnCourse = { ...Course.toObject(), ...firstLesson };
                 return res.json(returnCourse);
             });
@@ -142,7 +144,7 @@ module.exports = {
                         message: 'Error when getting lesson'
                     });
                 }
-                let firstLesson = { 'firstLesson': Lesson }
+                let firstLesson = { 'firstLesson': Lesson };
                 let returnCourse = { ...Course.toObject(), ...firstLesson };
                 return res.json(returnCourse);
             });
@@ -180,7 +182,7 @@ module.exports = {
                         });
                     }
                     else {
-                        Course = newCourse
+                        Course = newCourse;
                         Course.save(function (err, Course) {
                             if (err) {
                                 return res.status(500).json({
@@ -193,7 +195,7 @@ module.exports = {
                     }
                 });
             }
-        })
+        });
     },
 
     /**
@@ -240,7 +242,7 @@ module.exports = {
                     });
                 });
             }
-        })
+        });
     },
 
     /**
@@ -312,7 +314,7 @@ module.exports = {
                     return res.status(200).json(Course);
                 });
             }
-        })
+        });
 
     },
-}
+};
