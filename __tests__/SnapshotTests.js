@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('./../app')
+const app = require('./../app');
 
 describe('Test the snapshot get path without token', () => {
     test('It should respond with HTTP status 401', () => {
