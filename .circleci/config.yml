@@ -40,9 +40,9 @@ jobs: # a collection of steps
     #   - run: # wait for server to start
     #       name: making sure server had time to start
     #       command: sleep 15
-      - run: # run tests
-          name: test
-          command: npm test
+        - run: # run tests
+            name: test
+            command: npm test
       # - run: # run coverage report
       #     name: code-coverage
       #     command: './node_modules/.bin/nyc report --reporter=text-lcov'
