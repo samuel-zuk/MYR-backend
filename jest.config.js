@@ -3,6 +3,7 @@
 
 module.exports = {
   testEnvironment: "node",
+  reporters: ["default", "jest-junit"]
   // collectCoverage: true
   // globalSetup: './setup/jest/setup.js',
   // globalTeardown: './setup/jest/teardown.js',

@@ -6,21 +6,28 @@ jobs: # a collection of steps
       - image: circleci/node:10.9
       - image: mongo:3.6.7-stretch
     steps: # a collection of executable commands 
-      - checkout # special step to check out source code to working directory
-      - run:
-          name: install-mongo-cli
-          command: 'sudo apt-get install mongodb-clients'
-      - run:
-          name: mongo-test-db
-          command: 'mongorestore -d ecg-myr __tests__/mongo'
-      - run:
-          name: update-npm 
-          command: 'sudo npm install -g npm@latest'
-      - restore_cache: # special step to restore the dependency cache 
-          key: dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm-wee
-          command: npm install
+        - checkout # special step to check out source code to working directory
+        - run:
+            name: install-mongo-cli
+            command: 'sudo apt-get install mongodb-clients'
+        - run:
+            name: mongo-test-db
+            command: 'mongorestore -d ecg-myr __tests__/mongo'
+        - run:
+            name: update-npm 
+            command: 'sudo npm install -g npm@latest'
+        - restore_cache: # special step to restore the dependency cache 
+              key: dependency-cache-{{ checksum "package.json" }}
+        - run:
+            name: install-npm-wee
+            command: npm install
+        - run:
+            name: Install JUnit coverage reporter
+            command: yarn add --dev jest-junit
+        - run:   
+            name: Run tests with JUnit as reporter
+            command: jest --ci --reporters=default --reporters=jest-junit
+            environment: JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
       - save_cache: # special step to save the dependency cache
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
