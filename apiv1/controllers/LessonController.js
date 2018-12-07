@@ -30,12 +30,12 @@ module.exports = {
       pageSize = range[1];
       currentPage = range[0];
     }
-    let filter
+    let filter;
     if (pageSize != undefined && currentPage != undefined) {
       filter = {
         'skip': (pageSize * (currentPage - 1)),
         'limit': Number(pageSize)
-      }
+      };
     }
 
     let queryParams = { ...category, ...lessonNumber, ...previous, ...next };
@@ -53,10 +53,12 @@ module.exports = {
         });
       }
       LessonModel.countDocuments().exec(function (err, count) {
-        if (err) return next(err)
+        if (err) {
+          return next(err);
+        }
         res.set('Total-Documents', count);
         return res.json(Lesson);
-      })
+      });
     });
   },
 
@@ -136,7 +138,7 @@ module.exports = {
           return res.status(201).json(Lesson);
         });
       }
-    })
+    });
   },
 
   /**
@@ -185,7 +187,7 @@ module.exports = {
           });
         });
       }
-    })
+    });
   },
 
   /**
@@ -233,7 +235,7 @@ module.exports = {
           });
         });
       }
-    })
+    });
 
 
 
@@ -261,7 +263,7 @@ module.exports = {
           return res.status(200).json(Lesson);
         });
       }
-    })
+    });
 
   },
 
@@ -287,7 +289,7 @@ module.exports = {
           return res.status(200).json();
         });
       }
-    })
+    });
 
   }
 };

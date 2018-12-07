@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon server.js",
-    "test": "jest"
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -27,9 +27,10 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-eslint": "^10.0.1",
     "babel-preset-env": "^1.7.0",
+    "eslint": "^5.9.0",
     "jest": "^23.6.0",
-    "nodemon": "^1.18.4",
     "superagent": "^4.0.0-beta.5",
     "supertest": "^3.3.0"
   }

@@ -12,61 +12,71 @@ module.exports = {
      * SnapshotController.list()
      */
     list: function (req, res) {
-        // ToDo: Support comma separated list of categories
-        let user = req.query.user ? { user: req.query.user } : null;
-        let time = req.query.time ? { user: req.query.time } : null;
-        let error = req.query.error ? { error: req.query.error } : null;
-
-        let filter;
-        // let sort;
-        let range;
-        let pageSize;
-        let currentPage;
-        let docConditions;
-        let pageRange;
-        if (req.query.filter != undefined) {
-            filter = JSON.parse(req.query.filter);
-        }
-        // if (req.query.sort != undefined) {
-        //     sort = JSON.parse(req.query.sort);
-        // }
-        if (req.query.range != undefined) {
-            range = JSON.parse("\"" + req.query.range + "\"").split("[");
-            range.splice(0, 1);
-            range = range[0].split("]");
-            range.splice(1, 1);
-            range = range[0].split(",");
-            pageSize = range[1];
-            currentPage = range[0];
-        }
-        if (pageSize != undefined && currentPage != undefined) {
-            pageRange = {
-                'skip': (pageSize * (currentPage - 1)),
-                'limit': Number(pageSize)
+        let token = req.headers['x-access-token'];
+        verify.isAdmin(token).then(function (answer) {
+            if (!answer) {
+                res.status(401).send('Error 401: Not authorized');
             }
-        }
+            else {
+                // ToDo: Support comma separated list of categories
+                let user = req.query.user ? { user: req.query.user } : null;
+                let time = req.query.time ? { user: req.query.time } : null;
+                let error = req.query.error ? { error: req.query.error } : null;
 
-        docConditions = { ...pageRange };
+                let filter;
+                // let sort;
+                let range;
+                let pageSize;
+                let currentPage;
+                let docConditions;
+                let pageRange;
+                if (req.query.filter != undefined) {
+                    filter = JSON.parse(req.query.filter);
+                }
+                // if (req.query.sort != undefined) {
+                //     sort = JSON.parse(req.query.sort);
+                // }
+                if (req.query.range != undefined) {
+                    range = JSON.parse("\"" + req.query.range + "\"").split("[");
+                    range.splice(0, 1);
+                    range = range[0].split("]");
+                    range.splice(1, 1);
+                    range = range[0].split(",");
+                    pageSize = range[1];
+                    currentPage = range[0];
+                }
+                if (pageSize != undefined && currentPage != undefined) {
+                    pageRange = {
+                        'skip': (pageSize * (currentPage - 1)),
+                        'limit': Number(pageSize)
+                    };
+                }
 
-        let queryParams = { ...user, ...time, ...error, ...filter };
+                docConditions = { ...pageRange };
 
-        SnapshotModel.find(queryParams, {}, docConditions, function (err, Snapshot) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting Snapshot.',
-                    error: err
+                let queryParams = { ...user, ...time, ...error, ...filter };
+
+                SnapshotModel.find(queryParams, {}, docConditions, function (err, Snapshot) {
+                    if (err) {
+                        return res.status(500).json({
+                            message: 'Error when getting Snapshot.',
+                            error: err
+                        });
+                    }
+                    if (!Snapshot) {
+                        return res.status(404).json({
+                            message: 'No such Snapshot'
+                        });
+                    }
+                    SnapshotModel.countDocuments(queryParams).exec(function (err, count) {
+                        if (err) {
+                            return next(err);
+                        }
+                        res.set('Total-Documents', count);
+                        return res.json(Snapshot);
+                    });
                 });
             }
-            if (!Snapshot) {
-                return res.status(404).json({
-                    message: 'No such Snapshot'
-                });
-            }
-            SnapshotModel.countDocuments(queryParams).exec(function (err, count) {
-                if (err) return next(err)
-                res.set('Total-Documents', count);
-                return res.json(Snapshot);
-            })
         });
     },
 
@@ -125,7 +135,7 @@ module.exports = {
             timestamp: req.body.timestamp,
             text: req.body.text,
             error: req.body.error
-        })
+        });
         SnapshotModel.findOne({ user: newSnapshot.user, timestamp: newSnapshot.timestamp }, function (err, Snapshot) {
             if (err) {
                 return res.status(500).json({
@@ -139,7 +149,7 @@ module.exports = {
                 });
             }
             else {
-                Snapshot = newSnapshot
+                Snapshot = newSnapshot;
                 Snapshot.save(function (err, Snapshot) {
                     if (err) {
                         return res.status(500).json({
