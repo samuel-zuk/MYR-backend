@@ -246,53 +246,6 @@ module.exports = {
     },
 
     /**
-     * CourseController.update_via_shortname()
-     */
-    // update_via_shortname: function (req, res) {
-    //   let token = req.headers['x-access-token'];
-
-    //   verify.isAdmin(token).then(function (answer) {
-    //     if (!answer) {
-    //       res.status(401).send('Error 401: Not authorized');
-    //     }
-    //     else {
-    //       let shortname = req.params.shortname;
-    //       CourseModel.findOne({ shortname: shortname }, function (err, Course) {
-    //         if (err) {
-    //           return res.status(500).json({
-    //             message: 'Error when getting course',
-    //             error: err
-    //           });
-    //         }
-    //         if (!Course) {
-    //           return res.status(404).json({
-    //             message: 'No such course'
-    //           });
-    //         }
-
-    //         //Course = { ...Course, }
-    //         Course.name = req.body.name ? req.body.name : Course.name;
-    //         Course.shortname = req.body.shortname ? req.body.shortname : Course.shortname;
-    //         Course.lessons = req.body.lessons ? req.body.lessons : Course.lessons;
-    //         Course.difficulty = req.body.difficulty ? req.body.difficulty : Course.difficulty;
-    //         Course.description = req.body.description ? req.body.description : Course.description;
-
-    //         Course.save(function (err, Course) {
-    //           if (err) {
-    //             return res.status(500).json({
-    //               message: 'Error when updating Course.',
-    //               error: err
-    //             });
-    //           }
-
-    //           return res.json(Course);
-    //         });
-    //       });
-    //     }
-    //   })
-    // },
-
-    /**
      * CourseController.remove()
      */
     remove: function (req, res) {
