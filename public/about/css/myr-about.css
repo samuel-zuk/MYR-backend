@@ -1,0 +1,91 @@
+
+/* Copyright 2019 - University of Massachusetts Lowell, Engaging Computing Group */
+
+body {
+  font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color:#f8f9fa!important
+}
+
+header {
+  padding-top: 6rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 700;
+}
+
+.features-icons {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.features-icons .features-icons-item {
+  max-width: 20rem;
+}
+
+.features-icons .features-icons-item .features-icons-icon {
+  height: 7rem;
+}
+
+.features-icons .features-icons-item .features-icons-icon i {
+  font-size: 4.5rem;
+}
+
+.features-icons .features-icons-item:hover .features-icons-icon i {
+  font-size: 5rem;
+}
+
+.team-title{
+    font-style: italic;
+}
+
+.team-degree{
+    font-weight: bold;
+}
+
+.team-photo{
+    border-radius: 25px;
+    float: left;
+    margin-right: 10px;
+    max-height: 150px;
+    max-width: 200px;
+}
+
+.team-icons{
+    font-size: 30px;
+    color: #000000;
+    padding-right: 25px;    
+}
+
+.team-card{
+      padding-bottom: 1rem;
+}
+
+.privacy-policy{
+    padding-top: 2rem;
+}
+
+.terms-of-service{
+    padding-top: 2rem;
+}
+
+.support{
+    padding-top: 2rem;
+}
+
+blockquote {
+    border-left: 2px solid #ccc;
+    padding: 0.5em 10px;
+  }
+
+
+footer.footer {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
