@@ -20,25 +20,46 @@ h6 {
   font-weight: 700;
 }
 
-.features-icons {
+.icons-none {
   padding-top: 2rem;
   padding-bottom: 2rem;
 }
 
-.features-icons .features-icons-item {
+.icons-none .icons-none-item {
   max-width: 20rem;
 }
 
-.features-icons .features-icons-item .features-icons-icon {
+.icons-none .icons-none-item .icons-none-icon {
   height: 7rem;
 }
 
-.features-icons .features-icons-item .features-icons-icon i {
+.icons-none .icons-none-item .icons-none-icon i {
   font-size: 4.5rem;
 }
 
-.features-icons .features-icons-item:hover .features-icons-icon i {
+.icons-hover {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.icons-hover .icons-hover-item {
+  max-width: 20rem;
+}
+
+.icons-hover .icons-hover-item .icons-hover-icon {
+  height: 7rem;
+}
+
+.icons-hover .icons-hover-item .icons-hover-icon i {
+  font-size: 4.5rem;
+}
+
+.icons-hover .icons-hover-item:hover .icons-hover-icon i {
   font-size: 5rem;
+}
+
+.icons-hover-link:hover {
+  text-decoration: none;
 }
 
 .team-title{
