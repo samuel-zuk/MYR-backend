@@ -164,7 +164,9 @@ module.exports = {
                     admin: req.body.admin ? req.body.admin : false
                 });
 
-                UserModel.findOne({ email: req.body.email }, function (err, User) {
+                newUser.email = newUser.email.toLowerCase();    //all emails should be stored in lowercase
+
+                UserModel.findOne({ email: req.body.email.toLowerCase() }, function (err, User) {
                     if (err) {
                         return res.status(500).json({
                             message: 'Error when creating user.',
@@ -200,7 +202,7 @@ module.exports = {
      * UserController.login()
      */
     login: function (req, res) {
-        UserModel.findOne({ email: req.body.email }, function (err, User) {
+        UserModel.findOne({ email: req.body.email.toLowerCase() }, function (err, User) {
             if (err) {
                 return res.status(500).send('Error on the server.');
             }
@@ -260,7 +262,7 @@ module.exports = {
                     }
 
                     User.name = req.body.name ? req.body.name : User.name;
-                    User.email = req.body.email ? req.body.email : User.email;
+                    User.email = req.body.email ? req.body.email.toLowerCase() : User.email;
                     if (req.body.password != undefined && req.body.password != User.password) {
                         User.password = req.body.password ? bcrypt.hashSync(req.body.password, 8) : User.password;
                     }
