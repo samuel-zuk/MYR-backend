@@ -20,6 +20,14 @@ h6 {
   font-weight: 700;
 }
 
+.bg-theme{
+  background-color:#4d4e4f!important;
+}
+
+.text-theme{
+  color:#FFC300!important;
+}
+
 .icons-none {
   padding-top: 2rem;
   padding-bottom: 2rem;
