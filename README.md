@@ -3,7 +3,7 @@
 # MYR - My Reality - The Backend  
 MYR is an online editor for editing and viewing virtual worlds and effects. The system provides a beginner friendly interface with robust capabilities and is meant for exploration into the fun of programming.  
 
-The front end of MYR is an open source project that can be found on [GitHub](https://github.com/iSenseDev/MYR).
+The front end of MYR is an open source project that can be found on [GitHub](https://github.com/engaging-computing/MYR).
 
 This is the backend API for MYR. It controls database access and edits and file management. Information about getting started can be found on the Wiki.
 
