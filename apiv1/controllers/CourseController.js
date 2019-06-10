@@ -264,7 +264,7 @@ module.exports = {
                             error: err
                         });
                     }
-                    return res.status(200).json(Course);
+                    return res.status(204).json(Course);
                 });
             }
         });
