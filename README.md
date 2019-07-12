@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/engaging-computing/MYR-backend.svg?style=shield&circle-token=fa4ff9476ec1667542ca917f54bfc055babd4dc4)](https://circleci.com/gh/engaging-computing/MYR-backend)
+<b>Status:</b> [![CircleCI](https://circleci.com/gh/engaging-computing/MYR-backend.svg?style=shield&circle-token=fa4ff9476ec1667542ca917f54bfc055babd4dc4)](https://circleci.com/gh/engaging-computing/MYR-backend)
 
 # MYR - My Reality - The Backend  
 MYR is an online editor for editing and viewing virtual worlds and effects. The system provides a beginner friendly interface with robust capabilities and is meant for exploration into the fun of programming.  
