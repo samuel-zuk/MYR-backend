@@ -41,6 +41,7 @@ app.use(cookieParser());
 // Site paths
 app.use('/admin/', express.static(path.join(__dirname, 'public/admin')));
 app.use('/about/', express.static(path.join(__dirname, 'public/about')));
+app.use('/img/', express.static(path.join(__dirname, 'public/img')));
 app.use(express.static(path.join(__dirname, 'public/myr')));
 
 //sets the relative paths for the routers
