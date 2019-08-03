@@ -7,7 +7,7 @@ The front end of MYR is an open source project that can be found on [GitHub](htt
 
 This is the backend API for MYR. It controls database access and edits and file management. Information about getting started can be found on the Wiki.
 
-# Documentation  
+## Documentation  
 Although a work in progress, the API is documented [here](https://myr.docs.apiary.io).
 
 ## ECG
