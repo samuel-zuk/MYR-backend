@@ -61,6 +61,10 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/Lesson'
+      - in: header
+        name: x-access-token
+        type: string
+        required: true
       responses:
         201:
           description: Lesson created
@@ -110,6 +114,10 @@ paths:
         description: ID of the requested lesson to update
         required: true
         type: string
+      - in: header
+        name: x-access-token
+        type: string
+        required: true
       responses:
         200:
           description: Lesson updated
