@@ -60,7 +60,7 @@ paths:
         description: Lesson that needs to be created
         required: true
         schema:
-          $ref: '#/definitions/Lesson'
+          $ref: '#/definitions/NewLesson'
       - in: header
         name: x-access-token
         type: string
@@ -108,7 +108,7 @@ paths:
         description: Lesson properties to update
         required: true
         schema:
-          $ref: '#/definitions/Lesson'
+          $ref: '#/definitions/NewLesson'
       - name: id
         in: path
         description: ID of the requested lesson to update
@@ -143,25 +143,25 @@ paths:
         responses:
           200:
             description: Lesson deleted
-# securityDefinitions:
-#   petstore_auth:
-#     type: oauth2
-#     authorizationUrl: http://petstore.swagger.io/oauth/dialog
-#     flow: implicit
-#     scopes:
-#       write:pets: modify pets in your account
-#       read:pets: read your pets
-#   api_key:
-#     type: apiKey
-#     name: api_key
-#     in: header
 definitions:
   Lesson:
-    type: object
+    allOf:
+      - $ref: '#/definitions/NewLesson'
+      - required:
+        - id
+        type: object
+        properties:
+          _id:
+            type: string
+            example: "5c5b173d7682e1058205e316"
+
+  NewLesson:
+    type: "object"
+    required:
+      - name  
+      - prompt
+      - code
     properties:
-      _id:
-        type: string
-        example: "5c5b173d7682e1058205e316"
       name:
         type: string
         example: "Intro to Geometries"
@@ -171,94 +171,3 @@ definitions:
       code:
         type: string
         example: "box();"
-  # Category:
-  #   type: object
-  #   properties:
-  #     id:
-  #       type: integer
-  #       format: int64
-  #     name:
-  #       type: string
-  #   xml:
-  #     name: Category
-  # User:
-  #   type: object
-  #   properties:
-  #     id:
-  #       type: integer
-  #       format: int64
-  #     username:
-  #       type: string
-  #     firstName:
-  #       type: string
-  #     lastName:
-  #       type: string
-  #     email:
-  #       type: string
-  #     password:
-  #       type: string
-  #     phone:
-  #       type: string
-  #     userStatus:
-  #       type: integer
-  #       format: int32
-  #       description: User Status
-  #   xml:
-  #     name: User
-  # Tag:
-  #   type: object
-  #   properties:
-  #     id:
-  #       type: integer
-  #       format: int64
-  #     name:
-  #       type: string
-  #   xml:
-  #     name: Tag
-  # Lesson:
-  #   type: object
-  #   required:
-  #   - name
-  #   - photoUrls
-  #   properties:
-  #     id:
-  #       type: integer
-  #       format: int64
-  #     category:
-  #       $ref: '#/definitions/Category'
-  #     name:
-  #       type: string
-  #       example: doggie
-  #     photoUrls:
-  #       type: array
-  #       xml:
-  #         name: photoUrl
-  #         wrapped: true
-  #       items:
-  #         type: string
-  #     tags:
-  #       type: array
-  #       xml:
-  #         name: tag
-  #         wrapped: true
-  #       items:
-  #         $ref: '#/definitions/Tag'
-  #     status:
-  #       type: string
-  #       description: pet status in the store
-  #       enum:
-  #       - available
-  #       - pending
-  #       - sold
-  #   xml:
-  #     name: Pet
-  # ApiResponse:
-  #   type: object
-  #   properties:
-  #     code:
-  #       type: integer
-  #       format: int32
-  #     type:
-  #       type: string
-  #     message:
-  #       type: string
