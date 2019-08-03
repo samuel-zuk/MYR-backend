@@ -2,9 +2,9 @@ let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
 let LessonSchema = new Schema({
-	'name': String,
+	'name': { type: String, required: true },
 	'prompt': String,
-	'code': String,
+	'code': { type: String, required: true },
 	'categories': Array
 });
 
