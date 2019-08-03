@@ -7,7 +7,8 @@ The front end of MYR is an open source project that can be found on [GitHub](htt
 
 This is the backend API for MYR. It controls database access and edits and file management. Information about getting started can be found on the Wiki.
 
-
+# Documentation  
+Although a work in progress, the API is documented [here](https://myr.docs.apiary.io).
 
 ## ECG
 The [Engaging Computing Group](https://sites.uml.edu/engaging-computing) develops new technologies to enable learners—youth, teachers, undergraduates, and others—be creative in science, engineering, and computing,and studies how these technologies improve learning.
