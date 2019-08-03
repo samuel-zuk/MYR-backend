@@ -6,10 +6,7 @@ let LessonController = require('../controllers/LessonController.js');
  * GET
  * Gets all lessons from the database
  * Also has the ability to use the following URL query parameters
- * -lessonNumber
  * -category
- * -next
- * -previous
  */
 router.get('/', LessonController.list);
 
