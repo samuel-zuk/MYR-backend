@@ -35,14 +35,16 @@ paths:
       tags:
       - Lessons
       summary: Get all lessons
-      operationId: getLesson
+      operationId: getLessons
       produces:
       - application/json
       responses:
         200:
-          description: Invalid input
-        405:
-          description: Invalid input
+          description: Array of all lessons
+          schema: 
+              type: array
+              items: 
+                $ref: '#/definitions/Lesson'
     post:
       tags:
       - lesson
@@ -60,10 +62,33 @@ paths:
         schema:
           $ref: '#/definitions/Lesson'
       responses:
+        201:
+          description: Lesson created
+          schema: 
+              $ref: '#/definitions/Lesson'
         401:
           description: Unauthorized
         500:
           description: Internal Server Error
+  /lessons/id/{id}:
+    get:
+        tags:
+        - Lessons
+        summary: Get a lesson by ID
+        operationId: getLesson
+        produces:
+        - application/json
+        parameters:
+          - name: id
+            in: path
+            description: ID of the requested lesson
+            required: true
+            type: string
+        responses:
+          200:
+            description: Lesson object
+            schema: 
+                $ref: '#/definitions/Lesson'
 # securityDefinitions:
 #   petstore_auth:
 #     type: oauth2
