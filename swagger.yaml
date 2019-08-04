@@ -293,7 +293,116 @@ paths:
               $ref: '#/definitions/Unauthorized'
           500:
             description: Internal Server Error
+  /snapshots:
+    get:
+      tags:
+      - Snapshots
+      summary: Get all snapshots
+      operationId: getSnapshots
+      produces:
+      - application/json
+      parameters:
+          - in: header
+            name: x-access-token
+            type: string
+            required: true
+      responses:
+        200:
+          description: Array of all snapshots
+          schema: 
+              type: array
+              items: 
+                $ref: '#/definitions/Snapshot'
+        401:
+            description: Unauthorized
+            schema: 
+              $ref: '#/definitions/Unauthorized'
+    post:
+      tags:
+        - Snapshots
+      summary: Create a new snapshot
+      operationId: createSnapshot
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Snapshot that needs to be created
+        required: true
+        schema:
+          $ref: '#/definitions/NewSnapshot'
+      - in: header
+        name: x-access-token
+        type: string
+        required: true
+      responses:
+        201:
+          description: Snapshot created
+          schema: 
+              $ref: '#/definitions/Snapshot'
+        401:
+          description: Unauthorized
+          schema: 
+              $ref: '#/definitions/Unauthorized'
+        500:
+          description: Internal Server Error
+  /snapshots/{user}/{timestamp}:
+    get:
+        tags:
+          - SnapshotsI d
+        summary: Get a snapshot by user ID and timestamp
+        operationId: getSnapshotByUserTime
+        produces:
+        - application/json
+        parameters:
+          - name: user
+            in: path
+            description: User ID of requested snapshot
+            required: true
+            type: string
+          - name: timestamp
+            in: path
+            description: Timestamp of requested snapshot
+            required: true
+            type: string
+          - in: header
+            name: x-access-token
+            type: string
+            required: true
+        responses:
+          200:
+            description: Requested snapshot is returned
+            schema: 
+                $ref: '#/definitions/Snapshot'
+          401:
+            description: Unauthorized
+            schema: 
+                $ref: '#/definitions/Unauthorized'
+  /snapshots/id/{id}:
+    get:
+        tags:
+          - Snapshots
+        summary: Get a snapshot by ID
+        operationId: getSnapshotByID
+        produces:
+        - application/json
+        parameters:
+          - name: id
+            in: path
+            description: ID of the requested course
+            required: true
+            type: string
+        responses:
+          200:
+            description: Requested course is returned
+            schema: 
+                $ref: '#/definitions/Snapshot'
 definitions:
+  Unauthorized:
+    type: "string"
+    example: "Error 401: Not authorized"
   Lesson:
     allOf:
       - $ref: '#/definitions/NewLesson'
@@ -308,7 +417,6 @@ definitions:
           __v:
             type: integer
             example: 1
-
   NewLesson:
     type: "object"
     required:
@@ -325,7 +433,6 @@ definitions:
       code:
         type: string
         example: "box();"   
-        
   Course:
     allOf:
       - $ref: '#/definitions/NewCourse'
@@ -340,7 +447,6 @@ definitions:
           __v:
             type: integer
             example: 1
-
   NewCourse:
     type: "object"
     required:
@@ -363,7 +469,39 @@ definitions:
         example: 2
       lessons:
         type: array
-        example: ["5c5b173d7682e1058205e316","5c5b17557682e1058205e317","5c5b17807682e1058205e318","5c5b17977682e1058205e319","5c5b17ab7682e1058205e31a","5c5b17be7682e1058205e31b","5c5b17d27682e1058205e31c","5c5b18267682e1058205e31e"]
-  Unauthorized:
-    type: "string"
-    example: "Error 401: Not authorized"
+        example: ["5c5b173d7682e1058205e316","5c5b17557682e1058205e317"]
+  Snapshot:
+    allOf:
+      - $ref: '#/definitions/NewSnapshot'
+      - required:
+        - id
+        - __v
+        type: object
+        properties:
+          _id:
+            type: string
+            example: "5c5b180c7682e1058205e31d"
+          __v:
+            type: integer
+            example: 1
+  NewSnapshot:
+    type: "object"
+    required:
+      - user
+      - timestamp
+      - text
+      - error
+    properties:
+      user:
+        type: string
+        example: "c83nf38nf3n09fn303f"
+      timestamp:
+        type: string
+        format: date-time
+        example: "2018-10-19T04:35:51.196Z"
+      text:
+        type: string
+        example: "box();"
+      error:
+        type: boolean
+        example: true
