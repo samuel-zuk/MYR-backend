@@ -12,9 +12,6 @@ module.exports = {
    * LessonController.list()
    */
   list: function (req, res) {
-    // ToDo: Support comma separated list of categories
-    let category = req.query.category ? { categories: req.query.category } : null;
-
     let range;
     let pageSize;
     let currentPage;
@@ -35,9 +32,7 @@ module.exports = {
       };
     }
 
-    let queryParams = { ...category };
-
-    LessonModel.find(queryParams, {}, filter, function (err, Lesson) {
+    LessonModel.find({}, {}, filter, function (err, Lesson) {
       if (err) {
         return res.status(500).json({
           message: 'Error when getting Lesson.',
@@ -90,8 +85,7 @@ module.exports = {
     let Lesson = new LessonModel({
       name: req.body.name,
       prompt: req.body.prompt,
-      code: req.body.code,
-      categories: req.body.categories,
+      code: req.body.code
     });
     let token = req.headers['x-access-token'];
 
@@ -140,7 +134,6 @@ module.exports = {
           Lesson.name = req.body.name ? req.body.name : Lesson.name;
           Lesson.prompt = req.body.prompt ? req.body.prompt : Lesson.prompt;
           Lesson.code = req.body.code ? req.body.code : Lesson.code;
-          Lesson.categories = req.body.categories ? req.body.categories : Lesson.categories;
 
           Lesson.save(function (err, Lesson) {
             if (err) {
