@@ -47,7 +47,7 @@ paths:
                 $ref: '#/definitions/Lesson'
     post:
       tags:
-      - lesson
+      - Lessons
       summary: Create a new lesson
       operationId: createLesson
       consumes:
@@ -95,7 +95,7 @@ paths:
                 $ref: '#/definitions/Lesson'
     put:
       tags:
-      - lesson
+      - Lessons
       summary: Update a lesson
       operationId: updateLesson
       consumes:
@@ -140,20 +140,174 @@ paths:
             description: ID of the lesson to delete
             required: true
             type: string
+          - in: header
+            name: x-access-token
+            type: string
+            required: true
         responses:
           200:
             description: Lesson deleted
+  /courses:
+    get:
+      tags:
+      - Courses
+      summary: Get all courses
+      operationId: getCourses
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Array of all courses
+          schema: 
+              type: array
+              items: 
+                $ref: '#/definitions/Course'
+    post:
+      tags:
+      - Courses
+      summary: Create a new course
+      operationId: createCourse
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Course that needs to be created
+        required: true
+        schema:
+          $ref: '#/definitions/NewCourse'
+      - in: header
+        name: x-access-token
+        type: string
+        required: true
+      responses:
+        201:
+          description: Course created
+          schema: 
+              $ref: '#/definitions/Course'
+        401:
+          description: Unauthorized
+          schema: 
+              $ref: '#/definitions/Unauthorized'
+        500:
+          description: Internal Server Error
+  /courses/{name}:
+    get:
+        tags:
+        - Courses
+        summary: Get a course by its shortname
+        operationId: getCourseByShortname
+        produces:
+        - application/json
+        parameters:
+          - name: name
+            in: path
+            description: Shortname of the requested course
+            required: true
+            type: string
+        responses:
+          200:
+            description: Requested course is returned
+            schema: 
+                $ref: '#/definitions/Course'
+  /courses/id/{id}:
+    get:
+        tags:
+        - Courses
+        summary: Get a course by ID
+        operationId: getCourseByID
+        produces:
+        - application/json
+        parameters:
+          - name: id
+            in: path
+            description: ID of the requested course
+            required: true
+            type: string
+        responses:
+          200:
+            description: Requested course is returned
+            schema: 
+                $ref: '#/definitions/Course'
+    put:
+      tags:
+      - Courses
+      summary: Update a lesson
+      operationId: updateCourse
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Course properties to update
+        required: true
+        schema:
+          $ref: '#/definitions/NewCourse'
+      - name: id
+        in: path
+        description: ID of the requested course to update
+        required: true
+        type: string
+      - in: header
+        name: x-access-token
+        type: string
+        required: true
+      responses:
+        200:
+          description: Course updated
+          schema: 
+              $ref: '#/definitions/Course'
+        401:
+          description: Unauthorized
+          schema: 
+              $ref: '#/definitions/Unauthorized'
+        500:
+          description: Internal Server Error
+    delete:
+        tags:
+        - Courses
+        summary: Delete a course by ID
+        operationId: deleteCourse
+        produces:
+        - application/json
+        parameters:
+          - name: id
+            in: path
+            description: ID of the course to delete
+            required: true
+            type: string
+          - in: header
+            name: x-access-token
+            type: string
+            required: true
+        responses:
+          200:
+            description: Course deleted
+          401:
+            description: Unauthorized
+            schema: 
+              $ref: '#/definitions/Unauthorized'
+          500:
+            description: Internal Server Error
 definitions:
   Lesson:
     allOf:
       - $ref: '#/definitions/NewLesson'
       - required:
-        - id
+        - _id
+        - __v
         type: object
         properties:
           _id:
             type: string
             example: "5c5b173d7682e1058205e316"
+          __v:
+            type: integer
+            example: 1
 
   NewLesson:
     type: "object"
@@ -170,4 +324,46 @@ definitions:
         example: "This lesson will introduce you to using geometries."
       code:
         type: string
-        example: "box();"
+        example: "box();"   
+        
+  Course:
+    allOf:
+      - $ref: '#/definitions/NewCourse'
+      - required:
+        - id
+        - __v
+        type: object
+        properties:
+          _id:
+            type: string
+            example: "5c5b180c7682e1058205e31d"
+          __v:
+            type: integer
+            example: 1
+
+  NewCourse:
+    type: "object"
+    required:
+      - name  
+      - shortname
+      - difficulty
+      - description
+    properties:
+      name:
+        type: string
+        example: "Intro to Geometries"
+      shortname:
+        type: string
+        example: "geometries"
+      description:
+        type: string
+        example: "This course will introduce you to using geometries." 
+      difficulty:
+        type: integer
+        example: 2
+      lessons:
+        type: array
+        example: ["5c5b173d7682e1058205e316","5c5b17557682e1058205e317","5c5b17807682e1058205e318","5c5b17977682e1058205e319","5c5b17ab7682e1058205e31a","5c5b17be7682e1058205e31b","5c5b17d27682e1058205e31c","5c5b18267682e1058205e31e"]
+  Unauthorized:
+    type: "string"
+    example: "Error 401: Not authorized"
