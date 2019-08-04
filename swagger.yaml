@@ -29,6 +29,8 @@ tags:
   description: Reference Examples API
 - name: Snapshots
   description: Snapshots API
+- name: Users
+  description: Authentication API
 paths:
   /lessons:
     get:
@@ -412,7 +414,7 @@ paths:
         required: true
       responses:
         200:
-          description: Course updated
+          description: Reference example updated
           schema: 
               $ref: '#/definitions/ReferenceExample'
         401:
@@ -554,6 +556,184 @@ paths:
             description: Requested course is returned
             schema: 
                 $ref: '#/definitions/Snapshot'
+  /users:
+    get:
+      tags:
+      - Users
+      summary: Get all Users
+      operationId: getUsers
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Array of all Users
+          schema: 
+              type: array
+              items: 
+                $ref: '#/definitions/User'
+    post:
+      tags:
+      - Users
+      summary: Create a new user
+      operationId: createUser
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: User that needs to be created
+        required: true
+        schema:
+          $ref: '#/definitions/NewUser'
+      - in: header
+        name: x-access-token
+        type: string
+        required: true
+      responses:
+        201:
+          description: User created
+          schema: 
+              $ref: '#/definitions/User'
+        401:
+          description: Unauthorized
+          schema: 
+              $ref: '#/definitions/Unauthorized'
+        409:
+          description: Duplicate email
+          schema:
+            $ref: '#/definitions/Conflict'
+        500:
+          description: Internal Server Error
+  /users/login:
+    post:
+        tags:
+        - Users
+        summary: Login
+        operationId: userLogin
+        produces:
+        - application/json
+        responses:
+          200:
+            description: User authentication is returned
+            schema: 
+                $ref: '#/definitions/Auth'
+          401:
+            description: Unauthorized
+            schema: 
+              $ref: '#/definitions/Unauthorized'
+  /users/logout:
+    get:
+        tags:
+        - Users
+        summary: Logout
+        operationId: userLogout
+        produces:
+        - application/json
+        responses:
+          200:
+            description: User is logged out
+            schema: 
+                $ref: '#/definitions/RevokeAuth'
+  /users/profile:
+    get:
+        tags:
+        - Users
+        summary: Get the profile of the logged in user
+        operationId: getUserProfile
+        produces:
+        - application/json
+        responses:
+          200:
+            description: User profile is returned
+            schema: 
+                $ref: '#/definitions/ReferenceExample'
+          401:
+            description: Unauthorized
+            schema: 
+              $ref: '#/definitions/Unauthorized'
+  /users/id/{id}:
+    get:
+        tags:
+        - Users
+        summary: Get a user by ID
+        operationId: getUserByID
+        produces:
+        - application/json
+        parameters:
+          - name: id
+            in: path
+            description: ID of the requested user
+            required: true
+            type: string
+        responses:
+          200:
+            description: Requested user is returned
+            schema: 
+                $ref: '#/definitions/User'
+    put:
+      tags:
+      - Users
+      summary: Update a user
+      operationId: updateUser
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: User properties to update
+        required: true
+        schema:
+          $ref: '#/definitions/NewUser'
+      - name: id
+        in: path
+        description: ID of the requested user to update
+        required: true
+        type: string
+      - in: header
+        name: x-access-token
+        type: string
+        required: true
+      responses:
+        200:
+          description: User updated
+          schema: 
+              $ref: '#/definitions/User'
+        401:
+          description: Unauthorized
+          schema: 
+              $ref: '#/definitions/Unauthorized'
+        500:
+          description: Internal Server Error
+    delete:
+        tags:
+        - Users
+        summary: Delete a user by ID
+        operationId: deleteUser
+        produces:
+        - application/json
+        parameters:
+          - name: id
+            in: path
+            description: ID of the user to delete
+            required: true
+            type: string
+          - in: header
+            name: x-access-token
+            type: string
+            required: true
+        responses:
+          200:
+            description: User deleted
+          401:
+            description: Unauthorized
+            schema: 
+              $ref: '#/definitions/Unauthorized'
+          500:
+            description: Internal Server Error
 definitions:
   Unauthorized:
     type: "string"
@@ -706,3 +886,77 @@ definitions:
       suggestedCourse:
         type: string
         example: "geometry"
+  User:
+    allOf:
+      - $ref: '#/definitions/NewUser'
+      - required:
+        - id
+        - __v
+        - user_created
+        - last_login
+        type: object
+        properties:
+          _id:
+            type: string
+            example: "5c5b180c7682e1058205e31d"
+          __v:
+            type: integer
+            example: 1
+          user_created:
+            type: string
+            format: date-time
+            example: "2019-08-04T18:23:14.414Z"
+          last_login:
+            type: string
+            format: date-time
+            example: "2019-08-04T18:23:14.414Z"
+          password:
+            type: string
+            example: "$2a$10$rcPlmyt0Cy5QWiuXIlZgGeIl5obfjAJPJfFhpj8svZmIqw3dd8UaG"
+  NewUser:
+    type: "object"
+    required:
+      - email
+      - password
+    properties:
+      name:
+        type: string
+        example: "User"
+      email:
+        type: string
+        format: email
+        example: "example@learnmyr.org"
+      password:
+        type: string
+        example: "example_password"
+      admin:
+        type: boolean
+        example: false
+      subscribed:
+        type: boolean
+        example: true
+  Auth:
+    type: "object"
+    required:
+      - auth
+      - token
+    properties:
+      auth:
+        type: boolean
+        example: true
+      isAdmin:
+        type: boolean
+        example: false
+      token:
+        type: string
+        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+  RevokeAuth:
+    allOf:
+      - $ref: '#/definitions/Auth'
+    properties:
+      auth:
+        type: boolean
+        example: false
+      token:
+        type: string
+        example: null
