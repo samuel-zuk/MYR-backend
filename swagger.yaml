@@ -191,6 +191,10 @@ paths:
           description: Unauthorized
           schema: 
               $ref: '#/definitions/Unauthorized'
+        409:
+          description: Duplicate course shortname
+          schema:
+            $ref: '#/definitions/Conflict'
         500:
           description: Internal Server Error
   /courses/{name}:
@@ -337,6 +341,10 @@ paths:
           description: Unauthorized
           schema: 
               $ref: '#/definitions/Unauthorized'
+        409:
+          description: Duplicate function name
+          schema:
+            $ref: '#/definitions/Conflict'
         500:
           description: Internal Server Error
   /referenceexamples/{functionName}:
@@ -550,6 +558,12 @@ definitions:
   Unauthorized:
     type: "string"
     example: "Error 401: Not authorized"
+  Conflict:
+    type: "object"
+    properties:
+      message:
+        type: string
+        example: "A course with this function name already exists"
   Lesson:
     allOf:
       - $ref: '#/definitions/NewLesson'
