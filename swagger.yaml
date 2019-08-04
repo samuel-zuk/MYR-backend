@@ -293,6 +293,153 @@ paths:
               $ref: '#/definitions/Unauthorized'
           500:
             description: Internal Server Error
+  /referenceexamples:
+    get:
+      tags:
+      - Reference Examples
+      summary: Get all reference examples
+      operationId: getRefEx
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Array of all reference examples
+          schema: 
+              type: array
+              items: 
+                $ref: '#/definitions/ReferenceExample'
+    post:
+      tags:
+      - Reference Examples
+      summary: Create a new reference example
+      operationId: createRefEx
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Reference example that needs to be created
+        required: true
+        schema:
+          $ref: '#/definitions/NewReferenceExample'
+      - in: header
+        name: x-access-token
+        type: string
+        required: true
+      responses:
+        201:
+          description: Reference example
+          schema: 
+              $ref: '#/definitions/ReferenceExample'
+        401:
+          description: Unauthorized
+          schema: 
+              $ref: '#/definitions/Unauthorized'
+        500:
+          description: Internal Server Error
+  /referenceexamples/{functionName}:
+    get:
+        tags:
+        - Reference Examples
+        summary: Get a reference example by function name
+        operationId: getRefExByFuncName
+        produces:
+        - application/json
+        parameters:
+          - name: functionName
+            in: path
+            description: Function name of the requested reference example
+            required: true
+            type: string
+        responses:
+          200:
+            description: Requested reference example is returned
+            schema: 
+                $ref: '#/definitions/ReferenceExample'
+  /referenceexamples/id/{id}:
+    get:
+        tags:
+        - Reference Examples
+        summary: Get a reference example by ID
+        operationId: getRefExByID
+        produces:
+        - application/json
+        parameters:
+          - name: id
+            in: path
+            description: ID of the requested reference example
+            required: true
+            type: string
+        responses:
+          200:
+            description: Requested reference example is returned
+            schema: 
+                $ref: '#/definitions/ReferenceExample'
+    put:
+      tags:
+      - Reference Examples
+      summary: Update a reference example
+      operationId: updateRefEx
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Reference example properties to update
+        required: true
+        schema:
+          $ref: '#/definitions/NewReferenceExample'
+      - name: id
+        in: path
+        description: ID of the requested reference example to update
+        required: true
+        type: string
+      - in: header
+        name: x-access-token
+        type: string
+        required: true
+      responses:
+        200:
+          description: Course updated
+          schema: 
+              $ref: '#/definitions/ReferenceExample'
+        401:
+          description: Unauthorized
+          schema: 
+              $ref: '#/definitions/Unauthorized'
+        500:
+          description: Internal Server Error
+    delete:
+        tags:
+        - Reference Examples
+        summary: Delete a reference example by ID
+        operationId: deleteRefEx
+        produces:
+        - application/json
+        parameters:
+          - name: id
+            in: path
+            description: ID of the reference example to delete
+            required: true
+            type: string
+          - in: header
+            name: x-access-token
+            type: string
+            required: true
+        responses:
+          200:
+            description: Reference example deleted
+          401:
+            description: Unauthorized
+            schema: 
+              $ref: '#/definitions/Unauthorized'
+          500:
+            description: Internal Server Error
+  
   /snapshots:
     get:
       tags:
@@ -505,3 +652,43 @@ definitions:
       error:
         type: boolean
         example: true
+  ReferenceExample:
+    allOf:
+      - $ref: '#/definitions/NewReferenceExample'
+      - required:
+        - id
+        - __v
+        type: object
+        properties:
+          _id:
+            type: string
+            example: "5c5b180c7682e1058205e31d"
+          __v:
+            type: integer
+            example: 1
+  NewReferenceExample:
+    type: "object"
+    required:
+      - functionName
+      - type
+      - info
+      - code
+    properties:
+      functionName:
+        type: string
+        example: "text"
+      type:
+        type: string
+        example: "geometry"
+      info:
+        type: string
+        example: "The text function prints the given text using the current cursor attributes. If given no text, it will print \"Default\". This function returns an elementID."
+      code:
+        type: string
+        example: "text(\"example\");"
+      functionParams:
+        type: array
+        example: ["string"]
+      suggestedCourse:
+        type: string
+        example: "geometry"
