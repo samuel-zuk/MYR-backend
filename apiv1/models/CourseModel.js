@@ -5,7 +5,7 @@ let LessonSchema = new Schema({
 	'name': { type: String, required: true },
 	'prompt': String,
 	'code': { type: String, required: true }
-});
+}, {_id : false});
 
 let CourseSchema = new Schema({
     'shortname': String,
