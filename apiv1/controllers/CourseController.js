@@ -1,5 +1,4 @@
 let CourseModel = require('../models/CourseModel.js');
-let LessonModel = require('../models/LessonModel.js');
 let verify = require('../authorization/verifyAuth.js');
 
 /**
@@ -160,7 +159,8 @@ module.exports = {
             shortname: req.body.shortname,
             lessons: req.body.lessons,
             difficulty: req.body.difficulty,
-            description: req.body.description
+            description: req.body.description,
+            lessons: req.body.lessons
         });
         let token = req.headers['x-access-token'];
 
@@ -229,6 +229,7 @@ module.exports = {
                     Course.lessons = req.body.lessons ? req.body.lessons : Course.lessons;
                     Course.difficulty = req.body.difficulty ? req.body.difficulty : Course.difficulty;
                     Course.description = req.body.description ? req.body.description : Course.description;
+                    Course.lessons = req.body.lessons ? req.body.lessons : Course.lessons;
 
                     Course.save(function (err, Course) {
                         if (err) {
