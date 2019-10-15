@@ -88,25 +88,7 @@ module.exports = {
                     message: 'No such Course'
                 });
             }
-            if (!getLesson) {
-                return res.json(Course);
-            }
-            LessonModel.findOne({ _id: Course.lessons[0] }, function (err, Lesson) {
-                if (err) {
-                    return res.status(500).json({
-                        message: 'Error when getting course.',
-                        error: err
-                    });
-                }
-                if (!Lesson) {
-                    return res.status(404).json({
-                        message: 'Error when getting lesson'
-                    });
-                }
-                let firstLesson = { 'firstLesson': Lesson };
-                let returnCourse = { ...Course.toObject(), ...firstLesson };
-                return res.json(returnCourse);
-            });
+            return res.json(Course);
         });
     },
 
@@ -128,25 +110,7 @@ module.exports = {
                     message: 'No such Course'
                 });
             }
-            if (!getLesson) {
-                return res.json(Course);
-            }
-            LessonModel.findOne({ _id: Course.lessons[0] }, function (err, Lesson) {
-                if (err) {
-                    return res.status(500).json({
-                        message: 'Error when getting course.',
-                        error: err
-                    });
-                }
-                if (!Lesson) {
-                    return res.status(404).json({
-                        message: 'Error when getting lesson'
-                    });
-                }
-                let firstLesson = { 'firstLesson': Lesson };
-                let returnCourse = { ...Course.toObject(), ...firstLesson };
-                return res.json(returnCourse);
-            });
+            return res.json(Course);
         });
     },
 
