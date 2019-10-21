@@ -1,1 +1,1 @@
-{"options":{},"indexes":[{"v":2},"key":{"_id":1},"name":"_id_","ns":"ecg-myr.courses"}],"uuid":"511be7babee84047a2f3c04deca90924"}
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"ecg-myr.courses"}],"uuid":"511be7babee84047a2f3c04deca90924"}
