@@ -42,4 +42,22 @@ module.exports = {
             return res.status(201).send({id: newScene.id});
         });
     },
+    delete: function (req, resp){
+        let id = req.params.id;
+        SceneSchema.findByIdAndRemove(id, function(err, scene){
+            if(err){
+                return resp.status(500).json({
+                    message: "Error deleting Scene",
+                    error: err
+                });
+            }
+            if(!scene){
+                return resp.status(404).json({
+                    message: `Could not find scene id "${id}"`,
+                    error: "Scene Not Found"
+                });
+            }
+            return resp.send(204);
+        });
+    }
 };
