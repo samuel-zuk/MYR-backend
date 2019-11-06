@@ -3,7 +3,8 @@ let Schema = mongoose.Schema;
 
 let SceneSchema = new Schema({
     'name': String,
-    'owner_id': Schema.Types.ObjectId,
+    'uid': String,
+    'code': String,
     'settings': {
         'map': {
            'skyColor': String,
@@ -17,7 +18,7 @@ let SceneSchema = new Schema({
            'canFly': Boolean,
        },
        'viewOnly': Boolean,
-       'collection_id': Schema.Types.ObjectId
+       'collection': Schema.Types.ObjectId
     },
     'createTime': Date,
     'updateTime': Date
