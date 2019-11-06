@@ -44,6 +44,27 @@ module.exports = {
             return res.status(201).send({id: newScene.id});
         });
     },
+    list: function(req, resp){
+        if(!req.headers['x-access-token']){
+            return resp.status(400).json({
+                message: "Missing user ID",
+                error: "Bad Request"
+            });
+        }
+        let uid = req.headers['x-access-token'];
+        SceneSchema.find({uid: uid}, function(err, scenes){
+            if(err){
+                return resp.status(500).json({
+                    message: "Error finding scenes",
+                    error: err
+                });
+            }
+            if(scenes.length == 0){
+                return resp.status(204); //No Content Found
+            }
+            return resp.json(scenes);
+        });
+    },
     delete: function (req, resp){
         let id = req.params.id;
 
