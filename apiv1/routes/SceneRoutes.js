@@ -5,7 +5,8 @@ let SceneController = require('../controllers/SceneController.js');
 router.get("/", SceneController.list);
 router.post("/", SceneController.create);
 
-router.put("/id/:id", SceneController.update);
-router.delete("/id/:id", SceneController.delete);
+router.get("/:id", SceneController.getByID);
+router.put("/:id", SceneController.update);
+router.delete("/:id", SceneController.delete);
 
 module.exports = router;

@@ -145,7 +145,7 @@ module.exports = {
             }
             else if(!scene){
                 return resp.status(404).json({
-                    message: `Could not find scene "${id}`,
+                    message: `Could not find scene "${id}"`,
                     error: "Scene not found"
                 });
             }
@@ -169,6 +169,33 @@ module.exports = {
                     });
                 }
                 return resp.json(scene);//No Content
+            });
+        });
+    },
+    getByID: function(req, res){
+        let id = req.params.id;
+
+        SceneSchema.findById(id, function (err, result){
+            if(result){//Err will be caught by catch function
+                res.json(result);
+            }
+        }).catch(function (err) {
+            //Might be a firebase ID
+            SceneSchema.findOne({firebaseID: id}, function(err, result){
+                if(err){
+                    return res.status(500).json({
+                        message: "Error Fetching Scenes",
+                        error: err
+                    });
+                }
+                //Not found
+                if(!result){
+                    return res.status(404).json({
+                        message: `Could not find Scene ${id}`,
+                        error: "Scene not found"
+                    });
+                }
+                res.redirect(301, `${result.id}`);
             });
         });
     }
