@@ -2,6 +2,25 @@ let verify = require('../authorization/verifyAuth.js');
 let SceneSchema = require('../models/SceneModel');
 let mongoose = require('mongoose');
 
+function getByFirebaseID(res, id){
+    SceneSchema.findOne({firebaseID: id}, function(err, result){
+        if(err){
+            return res.status(500).json({
+                message: "Error Fetching Scenes",
+                error: err
+            });
+        }
+        //Not found
+        if(!result){
+            return res.status(404).json({
+                message: `Could not find Scene ${id}`,
+                error: "Scene not found"
+            });
+        }
+        return res.redirect(301, `${result.id}`);
+    });
+}
+
 function buildScene(body, settings, dest = undefined){
     if(dest == undefined){
         return new SceneSchema({
@@ -177,26 +196,14 @@ module.exports = {
 
         SceneSchema.findById(id, function (err, result){
             if(result){//Err will be caught by catch function
-                res.json(result);
+                return res.json(result);
+            }
+            else{
+                return getByFirebaseID(res, id);
             }
         }).catch(function (err) {
             //Might be a firebase ID
-            SceneSchema.findOne({firebaseID: id}, function(err, result){
-                if(err){
-                    return res.status(500).json({
-                        message: "Error Fetching Scenes",
-                        error: err
-                    });
-                }
-                //Not found
-                if(!result){
-                    return res.status(404).json({
-                        message: `Could not find Scene ${id}`,
-                        error: "Scene not found"
-                    });
-                }
-                res.redirect(301, `${result.id}`);
-            });
+            return getByFirebaseID(res, id);
         });
     }
 };
