@@ -2,29 +2,7 @@ let verify = require('../authorization/verifyAuth.js');
 let SceneSchema = require('../models/SceneModel');
 let mongoose = require('mongoose');
 
-function getByFirebaseID(res, id){
-    SceneSchema.findOne({firebaseID: id}, function(err, result){
-        if(err){
-            return res.status(500).json({
-                message: "Error Fetching Scenes",
-                error: err
-            });
-        }
-        //Not found
-        if(!result){
-            return res.status(404).json({
-                message: `Could not find Scene ${id}`,
-                error: "Scene not found"
-            });
-        }
-        return res.redirect(301, `${result.id}`);
-    });
-}
-
 function buildScene(body, settings, dest = undefined){
-    console.log(body);
-    console.log(settings);
-    console.log(dest);
     if(dest === undefined){
         return new SceneSchema({
             name: body.name,
@@ -47,14 +25,10 @@ function buildScene(body, settings, dest = undefined){
 module.exports = {
     create: function(req, res){
         let body = req.body;
-        console.log(body);
         if(Object.keys(body).length === 0 || body.uid === ""){ //Check if a body was supplied
             return res.status(400).send("Bad Request");
         }
-        console.log("About to do the thing!");
         let newScene = buildScene(body, body.settings);
-        console.log("I Did the thing!");
-        console.log(newScene);
         newScene.save(function (err, result){
             if(err){
                 return res.status(500).json({
@@ -189,14 +163,26 @@ module.exports = {
 
         SceneSchema.findById(id, function (err, result){
             if(result){//Err will be caught by catch function
-                return res.json(result);
-            }
-            else{
-                return getByFirebaseID(res, id);
+                res.json(result);
             }
         }).catch(function (err) {
             //Might be a firebase ID
-            return getByFirebaseID(res, id);
+            SceneSchema.findOne({firebaseID: id}, function(err, result){
+                if(err){
+                    return res.status(500).json({
+                        message: "Error Fetching Scenes",
+                        error: err
+                    });
+                }
+                //Not found
+                if(!result){
+                    return res.status(404).json({
+                        message: `Could not find Scene ${id}`,
+                        error: "Scene not found"
+                    });
+                }
+                res.redirect(301, `${result.id}`);
+            });
         });
     }
 };
