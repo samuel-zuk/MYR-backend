@@ -6,17 +6,13 @@ let SceneSchema = new Schema({
     'uid': String,
     'code': String,
     'settings': {
-        'map': {
-           'skyColor': String,
-           'showFloor': Boolean,
-           'floorColor': String,
-           'showCoordHelper': Boolean
-        },
-        'camera': {
-           'positon': String,
-           'config': Number,
-           'canFly': Boolean,
-       },
+        'skyColor': String,
+        'showFloor': Boolean,
+        'floorColor': String,
+        'showCoordHelper': Boolean,
+        'camPositon': String,
+        'camConfig': Number,
+        'canFly': Boolean,
        'viewOnly': Boolean,
        'collection': Schema.Types.ObjectId
     },

@@ -22,26 +22,15 @@ function getByFirebaseID(res, id){
 }
 
 function buildScene(body, settings, dest = undefined){
-    if(dest == undefined){
+    console.log(body);
+    console.log(settings);
+    console.log(dest);
+    if(dest === undefined){
         return new SceneSchema({
             name: body.name,
             uid: body.uid,
             code: body.code,
-            settings:{
-                map: {
-                    skyColor: settings.map.skyColor,
-                    showFloor: settings.map.showFloor,
-                    floorColor: settings.map.floorColor,
-                    showCoordHelper: settings.map.showCoordHelper
-                },
-                camera: {
-                    position: settings.camera.position,
-                    config: (settings.camera.config ? settings.camera.config : 0),
-                    canFly: settings.camera.canFly
-                },
-                viewOnly: settings.viewOnly,
-                collection: settings.collection
-            },
+            settings: settings,
             createTime: new Date(),
             updateTime: new Date()
         });
@@ -58,10 +47,14 @@ function buildScene(body, settings, dest = undefined){
 module.exports = {
     create: function(req, res){
         let body = req.body;
-        if(Object.keys(body).length === 0 && body.uid === ""){ //Check if a body was supplied
+        console.log(body);
+        if(Object.keys(body).length === 0 || body.uid === ""){ //Check if a body was supplied
             return res.status(400).send("Bad Request");
         }
-        let newScene = buildScene(body, body.settings, true);
+        console.log("About to do the thing!");
+        let newScene = buildScene(body, body.settings);
+        console.log("I Did the thing!");
+        console.log(newScene);
         newScene.save(function (err, result){
             if(err){
                 return res.status(500).json({
