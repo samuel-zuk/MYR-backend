@@ -36,7 +36,7 @@ module.exports = {
                     error: err
                 });
             }
-            return res.status(201).send({id: newScene.id});
+            return res.status(201).send({_id: newScene.id});
         });
     },
     list: function(req, resp){
