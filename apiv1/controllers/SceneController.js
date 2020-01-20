@@ -6,7 +6,6 @@ function buildScene(body, settings, dest = undefined){
     if(dest === undefined){
         return new SceneSchema({
             name: body.name,
-            uid: body.uid,
             code: body.code,
             settings: settings,
             createTime: new Date(),
@@ -25,10 +24,11 @@ function buildScene(body, settings, dest = undefined){
 module.exports = {
     create: function(req, res){
         let body = req.body;
-        if(Object.keys(body).length === 0 || body.uid === ""){ //Check if a body was supplied
+        if(Object.keys(body).length === 0 || !req.headers['x-access-token']){ //Check if a body was supplied
             return res.status(400).send("Bad Request");
         }
         let newScene = buildScene(body, body.settings);
+        newScene.uid = req.headers['x-access-token'];
         newScene.save(function (err, result){
             if(err){
                 return res.status(500).json({
@@ -41,9 +41,9 @@ module.exports = {
     },
     list: function(req, resp){
         if(!req.headers['x-access-token']){
-            return resp.status(400).json({
-                message: "Missing user ID",
-                error: "Bad Request"
+            return resp.status(401).json({
+                message: "No userID supplied",
+                error: "Unauthorized"
             });
         }
         let uid = req.headers['x-access-token'];
@@ -55,7 +55,7 @@ module.exports = {
                 });
             }
             if(scenes.length == 0){
-                return resp.status(204); //No Content Found
+                return resp.status(204).send({}); //No Content Found
             }
             return resp.json(scenes);
         });
@@ -108,13 +108,15 @@ module.exports = {
     update: function(req, resp){
         let id = req.params.id;
         let body = req.body;
+
         if(!req.headers['x-access-token']){
             return resp.status(400).json({
                 message: "Missing user ID",
                 error: "Bad Request"
             });
         }
-        if(Object.keys(body) == 0 || Object.keys(body.settings) == 0){
+
+        if(Object.keys(body) === 0 || body.settings === undefined){
             return resp.status(400).json({
                 message: "Missing required fields",
                 error: (Object.keys(body) == 0 ? "No body provided" : "No settings provided")
