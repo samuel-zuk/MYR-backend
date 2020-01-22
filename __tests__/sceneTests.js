@@ -2,16 +2,17 @@ const request = require('supertest');
 const app = require('./../app');
 const assert = require('assert');
 
-function sceneIsEqual(scene1, scene2, name, prefix=undefined){
+function sceneIsEqual(scene1, scene2, name){
     let props1 = Object.getOwnPropertyNames(scene1);
 
     for(let i = 0; i < props1.length; i++){
         let propName = props1[i];
         if(propName === "settings"){
-            sceneIsEqual(scene1[propName], scene2[propName], name, "settings");
-        }else {
+            sceneIsEqual(scene1[propName], scene2[propName], name);
+        }else if( propName !== "_id"){
             assert(scene1[propName] === scene2[propName], 
-                `${name}'s ` + (prefix ? `[${prefix}]` : "" ) + `[${propName}] are not equal!\n`);
+                `${name}'s [${propName}] are not equal! 
+                ${scene1[propName]} !== ${scene2[propName]}\n`);
         }
     }
     return true;
@@ -72,23 +73,33 @@ describe("Try to fetch lessons", () =>{
     test("Without a user id, it should return with a 401 Unauthorized", () =>{
         return request(app).get('/apiv1/scenes').expect(401);
     });
+   
     test("With an invalid user id, it should return 204 No Content", () => {
         return request(app).get('/apiv1/scenes').set({"x-access-token": "bobross"}).expect(204);
     });
-   test("With a valid id, it gets all scenes for that user", () =>{
-        return request(app).get('/apiv1/scenes').set({"x-access-token": "testing"})
+   
+    test("With a valid id, it gets all scenes for that user", () =>{
+        return request(app).get('/apiv1/scenes').set({"x-access-token": test_scenes[0].uid})
             .expect(200).then(response =>{
-                for(let i = 0; i < test_scenes.length - 1   ; i++){
+                for(let i = 0; i < test_scenes.length - 1; i++){
                     sceneIsEqual(test_scenes[i], response.body[i], test_scenes[i].name);
                 }
          });
    });
+
+   test("A different userID should return different scenes", () => {
+    return request(app).get('/apiv1/scenes').set({"x-access-token" : test_scenes[2].uid})
+        .expect(200).then(response => {
+            sceneIsEqual(test_scenes[2], response.body[0], test_scenes[2].name);
+    });
+   });
+
    test("With a valid id and a URL containing the Scence ID, only the scene with that specific ID should be returned", () =>{
-       let test1 = request(app).get(`/apiv1/scenes/id/${test_scenes[0]._id}`).set({"x-access-token": "testing"})
+       let test1 = request(app).get(`/apiv1/scenes/id/${test_scenes[0]._id}`).set({"x-access-token": test_scenes[0].uid})
             .expect(200).then(response =>{
                 sceneIsEqual(test_scenes[0], response.body, test_scenes[0].name);
         });
-        let test2 = request(app).get(`/apiv1/scenes/id/${test_scenes[1]._id}`).set({"x-access-token": "testing"})
+        let test2 = request(app).get(`/apiv1/scenes/id/${test_scenes[1]._id}`).set({"x-access-token": test_scenes[1].uid})
             .expect(200).then(response =>{
                 sceneIsEqual(test_scenes[1], response.body, test_scenes[1].name);
         });
@@ -118,10 +129,12 @@ describe("Scene Creation, Deletion, and Updates", () =>{
     test("Without a Body for creation, a 400 Error should be supplied", () =>{
         return request(app).post(`/apiv1/scenes`).set({"x-access-token": uid}).expect(400);
     });
+
     test("Without a User ID for creation, a 400 Error should be returned",() => {
         return request(app).post(`/apiv1/scenes`).send(lesson).set({"Content-Type": "application/json"})
             .expect(400);
     });
+
     test("Given a valid body and user id for creation, the scene should be created and a 201 code should be returned with the new ID for the scene", () =>{
         return request(app).post(`/apiv1/scenes`).send(lesson).set({"Content-Type": "application/json", "x-access-token": uid})
             .expect(201).then(response => { 
@@ -132,24 +145,29 @@ describe("Scene Creation, Deletion, and Updates", () =>{
                 });
             });
     });
+
     //Update section
     test("If a scene update is attempted with no User ID, it should return a 400", () => {
         return request(app).put(`/apiv1/scenes/id/${lesson._id}`).send(lesson).set({"Content-Type": "application/json"})
             .expect(400);
     });
+
     test("If a scene update is attempted using a UID that is not the owner's, it should return 403", () => {
         return request(app).put(`/apiv1/scenes/id/${lesson._id}`).send(lesson).set({"content-Type": "application/json", "x-access-token": "invalid"})
             .expect(401);
     });
+
     test("If a scene update is attempted with no body it should return 400", () =>{
         return request(app).put(`/apiv1/scenes/id/${lesson._id}`).set({"x-access-token": uid}).expect(400);
     });
+
     test("If a scene update is attempted with no settings in the body, it should return 400", () => {
         return request(app).put(`/apiv1/scenes/id/${lesson._id}`).send({
             "name": "Happy little trees",
             "code": "box();\nprism();"
         }).set({"x-access-token": uid, "Content-Type": "application/json"}).expect(400);
     });
+
     test("If a scene update is attempted with valid body and UID, then it should return 200 and the scene id should be the same", () =>{
         lesson.code = "box();\nprism();";
         return request(app).put(`/apiv1/scenes/id/${lesson._id}`).send(lesson).set({"x-access-token": uid, "Content-Type": "application/json"})
@@ -159,13 +177,16 @@ describe("Scene Creation, Deletion, and Updates", () =>{
                 });
             });
     });
+
     //Delete section
     test("If a scene deletion is attempted without a User ID, it should return 400", () => {
         return request(app).delete(`/apiv1/scenes/id/${lesson._id}`).expect(400);
     });
+
     test("If a scene deletion is attempted using a User ID that is not the owner's, it should return 401", () =>{
         return request(app).delete(`/apiv1/scenes/id/${lesson._id}`).set({"x-access-token": "invalid"}).expect(401);
     });
+    
     test("If a scene deletion is performed using a valid User ID, it should delete the scene (returning 204), which then should result in further GET requests returning 404", () =>{
         return request(app).delete(`/apiv1/scenes/id/${lesson._id}`).set({"x-access-token": uid}).expect(204).end(() => {
             return request(app).get(`/apiv1/scenes/id/${lesson._id}`).set({"x-access-token": uid}).expect(404);
