@@ -24,12 +24,9 @@ function buildScene(body, settings, dest = undefined){
 module.exports = {
     create: function(req, res){
         let body = req.body;
-        //Ensure something was sent and a userID as well
-        if(Object.keys(body).length === 0 || !req.headers['x-access-token']
-            || body.settings === undefined ){
+        if(Object.keys(body).length === 0 || !req.headers['x-access-token']){ //Check if a body was supplied
             return res.status(400).send("Bad Request");
         }
-
         let newScene = buildScene(body, body.settings);
         newScene.uid = req.headers['x-access-token'];
         newScene.save(function (err, result){
@@ -42,7 +39,6 @@ module.exports = {
             return res.status(201).send({_id: newScene.id});
         });
     },
-
     list: function(req, resp){
         if(!req.headers['x-access-token']){
             return resp.status(401).json({
@@ -64,7 +60,6 @@ module.exports = {
             return resp.json(scenes);
         });
     },
-
     delete: function (req, resp){
         let id = req.params.id;
 
@@ -110,7 +105,6 @@ module.exports = {
             }
         });
     },
-
     update: function(req, resp){
         let id = req.params.id;
         let body = req.body;
@@ -166,7 +160,6 @@ module.exports = {
             });
         });
     },
-
     getByID: function(req, res){
         let id = req.params.id;
 

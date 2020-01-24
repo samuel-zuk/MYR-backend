@@ -3,11 +3,6 @@ let router = express.Router();
 let SceneController = require('../controllers/SceneController.js');
 let ImageController = require('../controllers/ImageController.js');
 
-const multer = require('multer');
-const upload = multer({
-    dest: "/tmp/MYR-uploads/"
-});
-
 router.get("/", SceneController.list);
 router.post("/", SceneController.create);
 
