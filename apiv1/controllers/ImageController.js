@@ -1,15 +1,57 @@
 let verify = require('../authorization/verifyAuth.js');
 let SceneSchema = require('../models/SceneModel');
 let mongoose = require('mongoose');
+let fs = require("fs");
+
+const PNG = "89504E47";
+const JPG = ["FFD8FFDB", "FFD8FFE0"];
+
+const imgDest = "";
+
+function cleanup(path){
+    fs.unlinkSync(path);
+}
 
 //TODO remove redundant code
+function isImage(path){
+    let data = fs.readFileSync(path);
+
+    //Using 1st 4 bytes to determine MIME Type
+    data = data.subarray(0, 4);
+    let mime = data.toString("hex").toUpperCase();
+
+    switch(mime){
+        case PNG:
+        case JPG[0]:
+        case JPG[1]:
+            return true;
+        default:
+            return false;
+    }
+}
 
 module.exports = {
     create: function(req, res){
         let id = req.params.id;
         let uid = req.headers['x-access-token'];
+        let file = req.file;
+        
+        if(!file || Object.keys(file) === 0){
+            return res.status(400).json({
+                message: "No Image sent",
+                error: "Bad Request"
+            });
+        }
 
+        if(!isImage(file.path)){
+            cleanup(file.path);
+            return res.status(400).json({
+                message: "Invalid Image sent",
+                error: "Bad Request"
+            });
+        }
         if(!uid){
+            cleanup(file.path);
             return res.status(401).json({
                 message: "Missing user ID",
                 error: "Unauthorized"
@@ -18,18 +60,21 @@ module.exports = {
 
         SceneSchema.findById(id, (err, scene) =>{
             if(err){
+                cleanup(file.path);
                 return res.status(500).json({
                     message: "Error finding the scene ID",
                     error: err
                 });
             }
             if(!result){
+                cleanup(file.path);
                 return res.status(404).json({
                     message: `Could not find scene ${id}`,
                     error: "Scene not found"
                 });
             }
             if(scene.uid !== uid){
+                cleanup(file.path);
                 return res.status(401).json({
                     message: `You do not own scene ${id}`,
                     error: "Unauthorized"
