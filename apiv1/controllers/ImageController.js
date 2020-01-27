@@ -6,14 +6,15 @@ let fs = require("fs");
 const PNG = "89504E47";
 const JPG = ["FFD8FFDB", "FFD8FFE0"];
 
-const imgDest = "";
+const imgDest = "/home/keith/MYR/backend/uploads/";
 
 function cleanup(path){
     fs.unlinkSync(path);
 }
 
 //TODO remove redundant code
-function isImage(path){
+function isImage(file){
+    let path = file.path;
     let data = fs.readFileSync(path);
 
     //Using 1st 4 bytes to determine MIME Type
@@ -22,8 +23,11 @@ function isImage(path){
 
     switch(mime){
         case PNG:
+            file.extension = "png";
+            return true;
         case JPG[0]:
         case JPG[1]:
+            file.extension = "jpg";
             return true;
         default:
             return false;
@@ -35,7 +39,7 @@ module.exports = {
         let id = req.params.id;
         let uid = req.headers['x-access-token'];
         let file = req.file;
-        
+
         if(!file || Object.keys(file) === 0){
             return res.status(400).json({
                 message: "No Image sent",
@@ -43,7 +47,7 @@ module.exports = {
             });
         }
 
-        if(!isImage(file.path)){
+        if(!isImage(file)){
             cleanup(file.path);
             return res.status(400).json({
                 message: "Invalid Image sent",
@@ -66,7 +70,7 @@ module.exports = {
                     error: err
                 });
             }
-            if(!result){
+            if(!scene){
                 cleanup(file.path);
                 return res.status(404).json({
                     message: `Could not find scene ${id}`,
@@ -81,7 +85,10 @@ module.exports = {
                 });
             }
 
-            //TODO insert code for image upload
+            fs.renameSync(file.path, `${imgDest}/${id}.${file.extension}`);
+            return res.status(201).json({
+                message: "Success"
+            });
         });
     },
 
