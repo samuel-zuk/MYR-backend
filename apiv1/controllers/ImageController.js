@@ -3,15 +3,14 @@ let SceneSchema = require('../models/SceneModel');
 let mongoose = require('mongoose');
 let fs = require("fs");
 
-const PNG = "89504E47";
 const JPG = ["FFD8FFDB", "FFD8FFE0"];
 
-const imgDest = "/home/keith/MYR/backend/uploads/";
+const imgDest = "/home/keith/MYR/backend/uploads";
 
-async function isValidRequest(sceneID, uid, res, file, checkFile = true){
+async function isValidRequest(sceneID, uid, res, file = false){
     //Check to make sure that a vaild file was recieved
     let fileExists = file && Object.keys(file) !== 0;
-    if(checkFile && !fileExists|| !isImage(file)){
+    if(file !== false && (!fileExists|| !isImage(file))){
         res.status(400).json({
             message: (!fileExists ? "No Image sent" : "Invalid Image sent"),
             error: "Bad Request"
@@ -73,9 +72,6 @@ function isImage(file){
     let mime = data.toString("hex").toUpperCase();
 
     switch(mime){
-        case PNG:
-            file.extension = "png";
-            return true;
         case JPG[0]:
         case JPG[1]:
             file.extension = "jpg";
@@ -91,7 +87,7 @@ module.exports = {
         let uid = req.headers['x-access-token'];
         let file = req.file;
 
-        return isValidRequest(id, uid, res, file, true).then((reason) => {
+        return isValidRequest(id, uid, res, file).then((reason) => {
             if(reason === 200){
                 fs.renameSync(file.path, `${imgDest}/${id}.${file.extension}`);
                 res.status(201).json({
@@ -107,36 +103,21 @@ module.exports = {
     delete: function (req, resp){
         let id = req.params.id;
         let uid = req.headers['x-access-token'];
-
-        if(!uid){
-            return resp.status(400).json({
-                message: "Missing user ID",
-                error: "Bad Request"
-            });
-        }
-
-        SceneSchema.findById(id, (err, scene) => {
-            if(err){
-                return res.status(500).json({
-                    message: `Error finding scene ${id}`,
-                    error: err
+        
+        isValidRequest(id, uid, resp).then((result) => {
+            if(result === 200){
+                fs.unlink(`${imgDest}/${id}.jpg`, (err) => {
+                    if(err){
+                        return resp.status(404).json({
+                            message: `Scene ${id} does not have an image`,
+                            error: "Image not found"
+                        });
+                    }
+                    return resp.status(204).send();
                 });
             }
-            if(!scene){
-                return res.status(404).json({
-                    message: `Scene ${id} does not exist`,
-                    error: "Scene Not Found"
-                });
-            }
-            if(scene.uid !== uid){
-                return res.status(401).json({
-                    message: `You do not own Scene ${id}`,
-                    error: "Unauthorized"
-                });
-            }
-            //TODO Add code to remove the image from the server
+            return;
         });
-
     },
 
     update: function(req, resp){
