@@ -89,6 +89,14 @@ module.exports = {
 
         return isValidRequest(id, uid, res, file).then((reason) => {
             if(reason === 200){
+                if(fs.existsSync(`${imgDest}/${id}.${file.extension}`)){
+                    res.status(409).json({
+                        message: `Scene ${id} already has a preview image, use PUT to update it`,
+                        error: "Conflict"
+                    });
+                    cleanup(file.path);
+                    return;
+                }
                 fs.renameSync(file.path, `${imgDest}/${id}.${file.extension}`);
                 res.status(201).json({
                     message: "Created"
