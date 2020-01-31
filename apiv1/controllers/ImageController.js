@@ -131,34 +131,23 @@ module.exports = {
     update: function(req, resp){
         let id = req.params.id;
         let uid = req.headers['x-access-token'];
+        let file = req.file;
 
-        if(!uid){
-            return resp.status(400).json({
-                message: "Missing user ID",
-                error: "Bad Request"
-            });
-        }
-
-        SceneSchema.findById(id, (err, scene) => {
-            if(err){
-                return res.status(500).json({
-                    message: `Error finding scene ${id}`,
-                    error: err
-                });
+        isValidRequest(id, uid, resp, file).then((result) => {
+            if(result === 200){
+                if(!fs.existsSync(`${imgDest}/${id}.jpg`)){
+                    resp.status(404).json({
+                        message: `Scene ${id} does not have a preview, use POST to create one`,
+                        error: "Preview not found"                        
+                    });
+                    cleanup(file.path);
+                    return;
+                }
+                resp.status(204).send();
+            }else{
+                cleanup(file.path);
             }
-            if(!scene){
-                return res.status(404).json({
-                    message: `Scene ${id} does not exist`,
-                    error: "Scene Not Found"
-                });
-            }
-            if(scene.uid !== uid){
-                return res.status(401).json({
-                    message: `You do not own Scene ${id}`,
-                    error: "Unauthorized"
-                });
-            }
-            //TODO Add code to remove the image from the server
+            return;
         });
     },
 
@@ -178,7 +167,13 @@ module.exports = {
                     error: "Scene Not Found"
                 });
             }
-            //TODO Code to return image
+            if(!fs.existsSync(`${imgDest}/${id}.jpg`)){
+                return res.status(404).json({
+                    message: `Scene ${id} does not have a preview image`,
+                    error: "Preview not found"
+                });
+            }
+            return res.status(200).sendFile(`${imgDest}/${id}.jpg`);
         });
     }
 };
