@@ -17,6 +17,7 @@ async function isValidRequest(sceneID, uid, res, file = undefined, checkFile = f
         });
         return 400;
     }
+
     //User id supplied?
     if(!uid){
         res.status(401).json({
@@ -29,16 +30,8 @@ async function isValidRequest(sceneID, uid, res, file = undefined, checkFile = f
     //Find the scene
     let response = 0;
     //Catch invalid sceneID (can't be cast to ObjectID)
-    try{
-        await SceneSchema.findById(sceneID, (err, scene) =>{
-            //Internal Error
-            if(err){
-                response = 500;
-                return res.status(500).json({
-                    message: "Error finding the scene ID",
-                    error: err
-                });
-            }
+    await SceneSchema.findById(sceneID, (err, scene) =>{
+        if(!err){     
             if(!scene){
                 response = 404;
                 return res.status(response).json({
@@ -46,7 +39,7 @@ async function isValidRequest(sceneID, uid, res, file = undefined, checkFile = f
                     error: "Scene not found"
                 });
             }
-    
+
             if(scene.uid !== uid){
                 response = 401;
                 return res.status(response).json({
@@ -56,10 +49,22 @@ async function isValidRequest(sceneID, uid, res, file = undefined, checkFile = f
             }
             response = 200;
             return;
+        }   
+    }).catch(err => {
+        if(err.name === "CastError"){
+            response = 404;
+            return res.status(response).json({
+                message: `Could not find scene ${sceneID}`,
+                error: "Scene not found"
+            });
+        }
+
+        response = 500;
+        return res.status(500).json({
+            message: `Error fetching scene ${sceneID}`,
+            error: err
         });
-    }catch(e){
-        return 404;
-    }
+    });
     return response;
 }
 
@@ -119,15 +124,14 @@ module.exports = {
         
         isValidRequest(id, uid, resp).then((result) => {
             if(result === 200){
-                fs.unlink(`${imgDest}/${id}.jpg`, (err) => {
-                    if(err){
-                        return resp.status(404).json({
-                            message: `Scene ${id} does not have an image`,
-                            error: "Image not found"
-                        });
-                    }
-                    return resp.status(204).send();
-                });
+                if(!fs.existsSync(`${imgDest}/${id}.jpg`)){
+                    return resp.status(404).json({
+                        message: `Scene ${id} does not have an image`,
+                        error: "Image not found"
+                    });
+                }
+                fs.unlinkSync(`${imgDest}/${id}.jpg`);
+                return resp.status(204).send();
             }
             return;
         });
