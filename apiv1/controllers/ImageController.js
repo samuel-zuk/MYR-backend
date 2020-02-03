@@ -7,10 +7,10 @@ const JPG = ["FFD8FFDB", "FFD8FFE0"];
 
 const imgDest = "/home/keith/MYR/backend/uploads";
 
-async function isValidRequest(sceneID, uid, res, file = false){
+async function isValidRequest(sceneID, uid, res, file = undefined, checkFile = false){
     //Check to make sure that a vaild file was recieved
     let fileExists = file && Object.keys(file) !== 0;
-    if(file !== false && (!fileExists|| !isImage(file))){
+    if(checkFile && (!fileExists|| !isImage(file))){
         res.status(400).json({
             message: (!fileExists ? "No Image sent" : "Invalid Image sent"),
             error: "Bad Request"
@@ -28,33 +28,38 @@ async function isValidRequest(sceneID, uid, res, file = false){
     
     //Find the scene
     let response = 0;
-    await SceneSchema.findById(sceneID, (err, scene) =>{
-        //Internal Error
-        if(err){
-            response = 500;
-            return res.status(500).json({
-                message: "Error finding the scene ID",
-                error: err
-            });
-        }
-        if(!scene){
-            response = 404;
-            return res.status(response).json({
-                message: `Could not find scene ${sceneID}`,
-                error: "Scene not found"
-            });
-        }
-
-        if(scene.uid !== uid){
-            response = 401;
-            return res.status(response).json({
-                message: `You do not own scene ${sceneID}`,
-                error: "Unauthorized"
-            });
-        }
-        response = 200;
-        return;
-    });
+    //Catch invalid sceneID (can't be cast to ObjectID)
+    try{
+        await SceneSchema.findById(sceneID, (err, scene) =>{
+            //Internal Error
+            if(err){
+                response = 500;
+                return res.status(500).json({
+                    message: "Error finding the scene ID",
+                    error: err
+                });
+            }
+            if(!scene){
+                response = 404;
+                return res.status(response).json({
+                    message: `Could not find scene ${sceneID}`,
+                    error: "Scene not found"
+                });
+            }
+    
+            if(scene.uid !== uid){
+                response = 401;
+                return res.status(response).json({
+                    message: `You do not own scene ${sceneID}`,
+                    error: "Unauthorized"
+                });
+            }
+            response = 200;
+            return;
+        });
+    }catch(e){
+        return 404;
+    }
     return response;
 }
 
@@ -87,9 +92,9 @@ module.exports = {
         let uid = req.headers['x-access-token'];
         let file = req.file;
 
-        return isValidRequest(id, uid, res, file).then((reason) => {
+        return isValidRequest(id, uid, res, file, true).then((reason) => {
             if(reason === 200){
-                if(fs.existsSync(`${imgDest}/${id}.${file.extension}`)){
+                if(fs.existsSync(`${imgDest}/${id}.jpg`)){
                     res.status(409).json({
                         message: `Scene ${id} already has a preview image, use PUT to update it`,
                         error: "Conflict"
@@ -133,7 +138,7 @@ module.exports = {
         let uid = req.headers['x-access-token'];
         let file = req.file;
 
-        isValidRequest(id, uid, resp, file).then((result) => {
+        isValidRequest(id, uid, resp, file, true).then((result) => {
             if(result === 200){
                 if(!fs.existsSync(`${imgDest}/${id}.jpg`)){
                     resp.status(404).json({
@@ -144,7 +149,7 @@ module.exports = {
                     return;
                 }
                 resp.status(204).send();
-            }else{
+            }else if(file){
                 cleanup(file.path);
             }
             return;
