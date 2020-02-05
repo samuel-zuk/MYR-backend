@@ -5,7 +5,10 @@ let fs = require("fs");
 
 const JPG = ["FFD8FFDB", "FFD8FFE0"];
 
-const imgDest = "/home/keith/MYR/backend/uploads";
+const root = "/home/keith/MYR/backend";
+
+const imgDest = `${root}/uploads`;
+const notFound = `${root}/public/img/no_preview.jpg`;
 
 async function isValidRequest(sceneID, uid, res, file = undefined, checkFile = false){
     //Check to make sure that a vaild file was recieved
@@ -171,16 +174,10 @@ module.exports = {
                 });
             }
             if(!scene){
-                return res.status(404).json({
-                    message: `Scene ${id} does not exist`,
-                    error: "Scene Not Found"
-                });
+                return res.status(404).sendFile(notFound);
             }
             if(!fs.existsSync(`${imgDest}/${id}.jpg`)){
-                return res.status(404).json({
-                    message: `Scene ${id} does not have a preview image`,
-                    error: "Preview not found"
-                });
+                return res.status(404).sendFile(notFound);
             }
             return res.status(200).sendFile(`${imgDest}/${id}.jpg`);
         });
