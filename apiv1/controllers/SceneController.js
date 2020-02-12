@@ -1,13 +1,18 @@
-let verify = require('../authorization/verifyAuth.js');
 let SceneSchema = require('../models/SceneModel');
-let mongoose = require('mongoose');
 
-function buildScene(body, settings, dest = undefined){
+/**
+ * Builds a scene from the given parameters
+ * @param {Object} body A JSON object representing the scene
+ * @param {SceneSchema} dest A SceneSchema to be updated (undefined by default)
+ * 
+ * @returns {SceneSchema} A SceneSchema that can be committed to the database
+ */
+function buildScene(body, dest = undefined){
     if(dest === undefined){
         return new SceneSchema({
             name: body.name,
             code: body.code,
-            settings: settings,
+            settings: body.settings,
             createTime: new Date(),
             updateTime: new Date()
         });
@@ -15,7 +20,7 @@ function buildScene(body, settings, dest = undefined){
     else{
         dest.name = body.name;
         dest.code = body.code;
-        dest.settings = settings;
+        dest.settings = body.settings;
         dest.updateTime = new Date();
         return dest;
     }
@@ -27,7 +32,7 @@ module.exports = {
         if(Object.keys(body).length === 0 || !req.headers['x-access-token']){ //Check if a body was supplied
             return res.status(400).send("Bad Request");
         }
-        let newScene = buildScene(body, body.settings);
+        let newScene = buildScene(body);
         newScene.uid = req.headers['x-access-token'];
         newScene.save(function (err, result){
             if(err){
@@ -143,11 +148,8 @@ module.exports = {
                     error: "Unauthorized"
                 });
             }
-
-            scene.name = body.name;
-            scene.code = body.code;
-            scene.settings = body.settings;
-            scene.updateTime = new Date();
+            
+            buildScene(body, scene);
 
             scene.save(function(err, scene){
                 if(err){
