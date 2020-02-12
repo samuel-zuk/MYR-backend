@@ -3,7 +3,7 @@ let fs = require("fs");
 
 const JPG = ["FFD8FFDB", "FFD8FFE0"];
 
-const root = "/home/keith/MYR/backend";
+const root = `INSERT MYR BACKEND ROOT DIRECTORY HERE`;
 
 const imgDest = `${root}/uploads`;
 const notFound = `${root}/public/img/no_preview.jpg`;
@@ -143,6 +143,7 @@ function isImage(file){
 
 module.exports = {
     create: function(req, res){
+        console.log(__dirname);
         let id = req.params.id;
         let uid = req.headers['x-access-token'];
         let file = {
