@@ -98,8 +98,10 @@ module.exports = {
     create: function(req, res){
         let id = req.params.id;
         let uid = req.headers['x-access-token'];
-        let file = req.file;
-
+        console.log(req.body);
+        return res.status(200).json({
+            hiya: "man"
+        });
         return isValidRequest(id, uid, res, file, true).then((reason) => {
             if(reason === 200){
                 if(fs.existsSync(`${imgDest}/${id}.jpg`)){
