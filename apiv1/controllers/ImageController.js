@@ -151,7 +151,7 @@ module.exports = {
                     cleanup(file.path);
                     return;
                 }
-                fs.renameSync(file.path, `${imgDest}/${id}.${file.extension}`);
+                fs.renameSync(file.path, `${imgDest}/${id}.jpg`);
                 res.status(201).json({
                     message: "Created"
                 });
@@ -188,6 +188,13 @@ module.exports = {
             path: `${tmp}/$${id}-${Date.now()}.jpg`
         };
 
+        if(!createImage(req.body.data, file.path)){
+            return res.status(500).json({
+                error: "Internal Error",
+                message: "Error decoding base64 string"
+            });
+        }
+
         isValidRequest(id, uid, resp, file, true).then((result) => {
             if(result === 200){
                 if(!fs.existsSync(`${imgDest}/${id}.jpg`)){
@@ -198,6 +205,7 @@ module.exports = {
                     cleanup(file.path);
                     return;
                 }
+                fs.renameSync(file.path, `${imgDest}/${id}.jpg`);
                 resp.status(204).send();
             }else if(file){
                 cleanup(file.path);
