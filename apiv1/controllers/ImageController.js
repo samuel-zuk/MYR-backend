@@ -10,6 +10,31 @@ const root = "/home/keith/MYR/backend";
 const imgDest = `${root}/uploads`;
 const notFound = `${root}/public/img/no_preview.jpg`;
 
+const tmp = "/tmp";
+
+/**
+ * 
+ * @param {string} base64 The image represented as a base64 string
+ * @param {string} path The path for the file to be saved
+ * @returns {boolean} True on successful write to file, false otherwise
+ */
+function createImage(base64, path){
+    let data = base64;
+    try{
+        data = base64.split(",")[1];
+    }catch(e){
+        data = base64;
+    }
+
+    try{
+        fs.writeFileSync(path, data, "base64");
+    }catch(err){
+        console.error(err);
+        return false;
+    }
+    return true;
+}
+
 async function isValidRequest(sceneID, uid, res, file = undefined, checkFile = false){
     //Check to make sure that a vaild file was recieved
     let fileExists = file && Object.keys(file) !== 0;
@@ -98,10 +123,24 @@ module.exports = {
     create: function(req, res){
         let id = req.params.id;
         let uid = req.headers['x-access-token'];
-        console.log(req.body);
-        return res.status(200).json({
-            hiya: "man"
-        });
+        let file = {
+            path: `${tmp}/${Date.now()}.jpg`
+        };
+
+        if(req.body.data === undefined){
+            return res.status(400).json({
+                error: "Bad Request",
+                message: "No data sent"
+            });
+        }
+        
+        if(!createImage(req.body.data, file.path)){
+            return res.status(500).json({
+                error: "Internal Error",
+                message: "Error decoding base64 string"
+            });
+        }
+
         return isValidRequest(id, uid, res, file, true).then((reason) => {
             if(reason === 200){
                 if(fs.existsSync(`${imgDest}/${id}.jpg`)){
