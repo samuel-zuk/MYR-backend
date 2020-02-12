@@ -10,8 +10,9 @@ router.get("/id/:id", SceneController.getByID);
 router.put("/id/:id", SceneController.update);
 router.delete("/id/:id", SceneController.delete);
 
+//Preview endpoint
 router.get("/preview/:id", ImageController.getByID);
-router.post("/preview/:id", express.json(), ImageController.create);
+router.post("/preview/:id", ImageController.create);
 router.put("/preview/:id",  ImageController.update);
 router.delete("/preview/:id", ImageController.delete);
 

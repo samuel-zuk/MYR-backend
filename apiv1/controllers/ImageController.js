@@ -1,6 +1,4 @@
-let verify = require('../authorization/verifyAuth.js');
 let SceneSchema = require('../models/SceneModel');
-let mongoose = require('mongoose');
 let fs = require("fs");
 
 const JPG = ["FFD8FFDB", "FFD8FFE0"];
@@ -13,6 +11,7 @@ const notFound = `${root}/public/img/no_preview.jpg`;
 const tmp = "/tmp";
 
 /**
+ * Creates an image based off of a data URL
  * 
  * @param {string} base64 The image represented as a base64 string
  * @param {string} path The path for the file to be saved
@@ -35,9 +34,20 @@ function createImage(base64, path){
     return true;
 }
 
+/**
+ * Processes common failures of HTTP requests
+ * 
+ * @param {string} sceneID The ID of the scene being used
+ * @param {string} uid The ID of the user who made the request
+ * @param {Express.Response} res The response variable (used for common rejections) 
+ * @param {Object} file A JSON object that holds the path of the temporary file (undefined by default) 
+ * @param {boolean} checkFile Initializes file checks (file is valid, valid image, etc) (false by default)
+ * 
+ * @returns {Promise<number>} Returns a promise that holds the HTTP status code for any failures, 200 if OK
+ */
 async function isValidRequest(sceneID, uid, res, file = undefined, checkFile = false){
     //Check to make sure that a vaild file was recieved
-    let fileExists = file && Object.keys(file) !== 0;
+    let fileExists = (file && Object.keys(file) !== 0);
     if(checkFile && (!fileExists|| !isImage(file))){
         res.status(400).json({
             message: (!fileExists ? "No Image sent" : "Invalid Image sent"),
@@ -57,7 +67,7 @@ async function isValidRequest(sceneID, uid, res, file = undefined, checkFile = f
     
     //Find the scene
     let response = 0;
-    //Catch invalid sceneID (can't be cast to ObjectID)
+
     await SceneSchema.findById(sceneID, (err, scene) =>{
         if(!err){     
             if(!scene){
@@ -77,7 +87,8 @@ async function isValidRequest(sceneID, uid, res, file = undefined, checkFile = f
             }
             response = 200;
             return;
-        }   
+        }
+    //Catch invalid sceneID (strings that can't be cast to ObjectID)
     }).catch(err => {
         if(err.name === "CastError"){
             response = 404;
@@ -96,11 +107,22 @@ async function isValidRequest(sceneID, uid, res, file = undefined, checkFile = f
     return response;
 }
 
+/**
+ * Cleans up in the case of an error with the request
+ * @param {string} path The path of the file to be removed
+ */
 function cleanup(path){
     fs.unlinkSync(path);
 }
 
-//TODO remove redundant code
+
+/**
+ * Processes the first 4 bytes of a file to determine if it is a vaild image
+ * 
+ * @param {Object} file A JSON object with a path specifying where the file is
+ * 
+ * @returns {boolean} Boolean on wheter the file is a valid image
+ */
 function isImage(file){
     let path = file.path;
     let data = fs.readFileSync(path);
@@ -124,6 +146,7 @@ module.exports = {
         let id = req.params.id;
         let uid = req.headers['x-access-token'];
         let file = {
+            //Using id in combo with timestamp to prevent collisions
             path: `${tmp}/${id}-${Date.now()}.jpg`
         };
 
@@ -143,6 +166,7 @@ module.exports = {
 
         return isValidRequest(id, uid, res, file, true).then((reason) => {
             if(reason === 200){
+                //Check to make sure a file does not already exist
                 if(fs.existsSync(`${imgDest}/${id}.jpg`)){
                     res.status(409).json({
                         message: `Scene ${id} already has a preview image, use PUT to update it`,
