@@ -124,7 +124,7 @@ module.exports = {
         let id = req.params.id;
         let uid = req.headers['x-access-token'];
         let file = {
-            path: `${tmp}/${Date.now()}.jpg`
+            path: `${tmp}/${id}-${Date.now()}.jpg`
         };
 
         if(req.body.data === undefined){
@@ -184,7 +184,9 @@ module.exports = {
     update: function(req, resp){
         let id = req.params.id;
         let uid = req.headers['x-access-token'];
-        let file = req.file;
+        let file = {
+            path: `${tmp}/$${id}-${Date.now()}.jpg`
+        };
 
         isValidRequest(id, uid, resp, file, true).then((result) => {
             if(result === 200){
