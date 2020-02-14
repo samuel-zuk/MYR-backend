@@ -9,8 +9,8 @@ const altSceneID = "5de93a961466c65b7fda92dc";
 const validHeaders = {"x-access-token": "testing"};
 
 const image_orig = `${__dirname}/img.jpeg`;
-const image = fs.readFileSync(`${__dirname}/img.b64`).toString();
-const invalid_image = fs.readFileSync(`${__dirname}/hi.b64`).toString();
+const image = fs.readFileSync(image_orig).toString("base64");
+const invalid_image = fs.readFileSync(`${__dirname}/hi.jpeg`).toString("base64");
 
 const testFile = "/tmp/test.jpg";
 
