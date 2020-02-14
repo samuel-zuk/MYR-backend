@@ -3,7 +3,7 @@ let fs = require("fs");
 
 const JPG = ["FFD8FFDB", "FFD8FFE0"];
 
-const root = (process.env.CI === true ? `${process.env.HOME}/mern-starter` : 
+const root = (process.env.CI === "true" ? `${process.env.HOME}/mern-starter` : 
     `${process.env.HOME}/MYR/backend`);
 
 const imgDest = `${root}/uploads`;
