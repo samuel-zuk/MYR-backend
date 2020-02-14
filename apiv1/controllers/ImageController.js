@@ -3,7 +3,8 @@ let fs = require("fs");
 
 const JPG = ["FFD8FFDB", "FFD8FFE0"];
 
-const root = `/home/keith/MYR/backend`;
+const root = (process.env.CI === true ? `${process.env.HOME}/mern-starter` : 
+    `${process.env.HOME}/MYR/backend`);
 
 const imgDest = `${root}/uploads`;
 const notFound = `${root}/public/img/no_preview.jpg`;
@@ -18,9 +19,11 @@ const tmp = "/tmp";
  * @returns {boolean} True on successful write to file, false otherwise
  */
 function createImage(base64, path){
-    let data = base64;
+    let data = "";
+    
     try{
-        data = base64.split(",")[1];
+        let result = base64.split(",")[1];
+        data = (result !== undefined ? result : base64);
     }catch(e){
         data = base64;
     }
