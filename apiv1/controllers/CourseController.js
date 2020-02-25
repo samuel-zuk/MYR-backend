@@ -1,5 +1,4 @@
 let CourseModel = require('../models/CourseModel.js');
-let LessonModel = require('../models/LessonModel.js');
 let verify = require('../authorization/verifyAuth.js');
 
 /**
@@ -89,25 +88,7 @@ module.exports = {
                     message: 'No such Course'
                 });
             }
-            if (!getLesson) {
-                return res.json(Course);
-            }
-            LessonModel.findOne({ _id: Course.lessons[0] }, function (err, Lesson) {
-                if (err) {
-                    return res.status(500).json({
-                        message: 'Error when getting course.',
-                        error: err
-                    });
-                }
-                if (!Lesson) {
-                    return res.status(404).json({
-                        message: 'Error when getting lesson'
-                    });
-                }
-                let firstLesson = { 'firstLesson': Lesson };
-                let returnCourse = { ...Course.toObject(), ...firstLesson };
-                return res.json(returnCourse);
-            });
+            return res.json(Course);
         });
     },
 
@@ -129,25 +110,7 @@ module.exports = {
                     message: 'No such Course'
                 });
             }
-            if (!getLesson) {
-                return res.json(Course);
-            }
-            LessonModel.findOne({ _id: Course.lessons[0] }, function (err, Lesson) {
-                if (err) {
-                    return res.status(500).json({
-                        message: 'Error when getting course.',
-                        error: err
-                    });
-                }
-                if (!Lesson) {
-                    return res.status(404).json({
-                        message: 'Error when getting lesson'
-                    });
-                }
-                let firstLesson = { 'firstLesson': Lesson };
-                let returnCourse = { ...Course.toObject(), ...firstLesson };
-                return res.json(returnCourse);
-            });
+            return res.json(Course);
         });
     },
 
@@ -160,7 +123,8 @@ module.exports = {
             shortname: req.body.shortname,
             lessons: req.body.lessons,
             difficulty: req.body.difficulty,
-            description: req.body.description
+            description: req.body.description,
+            lessons: req.body.lessons
         });
         let token = req.headers['x-access-token'];
 
@@ -229,6 +193,7 @@ module.exports = {
                     Course.lessons = req.body.lessons ? req.body.lessons : Course.lessons;
                     Course.difficulty = req.body.difficulty ? req.body.difficulty : Course.difficulty;
                     Course.description = req.body.description ? req.body.description : Course.description;
+                    Course.lessons = req.body.lessons ? req.body.lessons : Course.lessons;
 
                     Course.save(function (err, Course) {
                         if (err) {
