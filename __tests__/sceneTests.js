@@ -5,8 +5,7 @@ const assert = require('assert');
 function sceneIsEqual(scene1, scene2, name){
     let props1 = Object.getOwnPropertyNames(scene1);
 
-    for(let i = 0; i < props1.length; i++){
-        let propName = props1[i];
+    props1.forEach(propName => {
         if(propName === "settings"){
             sceneIsEqual(scene1[propName], scene2[propName], name);
         }else if( propName !== "_id"){
@@ -14,7 +13,7 @@ function sceneIsEqual(scene1, scene2, name){
                 `${name}'s [${propName}] are not equal! 
                 ${scene1[propName]} !== ${scene2[propName]}\n`);
         }
-    }
+    });
     return true;
 }
 
