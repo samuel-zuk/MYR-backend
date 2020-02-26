@@ -10,7 +10,7 @@ const uploadLimit = "1mb";
 //sets the database connection details
 let mongoose = require('mongoose');
 let mongoDB = 'mongodb://127.0.0.1:27017/ecg-myr';
-mongoose.connect(mongoDB, { useNewUrlParser: true });
+mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Get Mongoose to use the global promise library
 mongoose.Promise = global.Promise;
