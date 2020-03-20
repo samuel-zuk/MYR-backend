@@ -18,11 +18,13 @@ let userRouter = require('./routes/UserRoutes');
 let courseRouter = require('./routes/CourseRoutes');
 let referenceExampleRouter = require('./routes/ReferenceExampleRoutes');
 let snapshotRouter = require('./routes/SnapshotRoutes');
+let notifRouter = require("./routes/NotificationRoutes");
 let defaultRouter = require('./routes/DefaultRoutes');
 
 //sets the relative paths for the routers
 apiv1.use('/users', apiLimiter, userRouter);
 apiv1.use('/courses', apiLimiter, courseRouter);
+apiv1.use("/notifs", apiLimiter, notifRouter);
 apiv1.use('/referenceExamples', apiLimiter, referenceExampleRouter);
 apiv1.use('/snapshots', snapshotLimiter, snapshotRouter);
 apiv1.use('/*', defaultRouter);
