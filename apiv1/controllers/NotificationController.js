@@ -16,15 +16,56 @@ const notFound = {
     error: "Not Found"
 };
 
+const defaultNotifs = {
+    endTime: {$gt: Date.now()},
+    startTime: {$lt: Date.now()}
+};
+
+function createFilter(params){
+    let filter = {};
+    if(params === undefined){
+        return defaultNotifs;
+    }
+
+    if(params.startTime){
+        filter.startTime = {
+            $gt: params.startTime
+        };
+    }
+
+    if(params.endTime){
+        filter.startTime = {
+            $lt: params.startTime
+        };
+    }
+
+    if(params.title){
+        filter.title = new RegExp(params.title, "i");
+    }
+
+    return filter;
+}
+
 module.exports = {
     fetch: async function(req, resp){
-        let time = Date.now();
+        let filter = undefined;
+        let range = [0, 0];
+
+        if(req.query.filter){
+            filter = JSON.parse(`${req.query.filter}`);
+        }
+        if(req.query.range){
+            range = JSON.parse(`${req.query.range}`);
+        }
+        dbFilter = createFilter(filter);
+
         let notifs;
         try{
-            notifs = await NotifSchema.find({
-                endTime: {$gt: time},
-                startTime: {$lt: time}
-            });
+            notifs = await NotifSchema.find(dbFilter);
+            
+            if(range[0] !== 0 && range[0] !== range[1]){
+                notifs = notifs.slice(range[0]-1, range[1]-1);
+            }
         }catch(err){
             return resp.status(500).json({
                 message: "Error fetching notifications",
