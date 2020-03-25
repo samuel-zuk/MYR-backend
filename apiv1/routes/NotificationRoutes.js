@@ -5,7 +5,8 @@ let NotifController = require("../controllers/NotificationController");
 router.get("/", NotifController.fetch);
 router.post("/", NotifController.create);
 
-router.put("/:id", NotifController.update);
-router.delete("/:id", NotifController.delete);
+router.get("/id/:id", NotifController.find);
+router.put("/id/:id", NotifController.update);
+router.delete("/id/:id", NotifController.delete);
 
 module.exports = router;

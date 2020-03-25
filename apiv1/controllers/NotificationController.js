@@ -62,7 +62,7 @@ module.exports = {
     update: async function(req, resp){
         let body = req.body;
         let id = req.params.id;
-        let isAdmin = await verifyAuth.isAdmin(requ.headers['x-access-token']);
+        let isAdmin = await verifyAuth.isAdmin(req.headers['x-access-token']);
 
         if(!isAdmin){
             return resp.status(401).json(unauthorized);
@@ -106,7 +106,7 @@ module.exports = {
     },
     delete: async function(req, resp){
         let id  = req.params.id;
-        let isAdmin = await verifyAuth.isAdmin(requ.headers['x-access-token']);
+        let isAdmin = await verifyAuth.isAdmin(req.headers['x-access-token']);
 
         if(!isAdmin){
             return resp.status(401).json(unauthorized);
@@ -139,5 +139,27 @@ module.exports = {
         }
 
         return resp.sendStatus(204);
+    },
+    find: async function(req, resp){
+        let id = req.params.id;
+
+        let notif;
+        try{
+            notif = await NotifSchema.findById(id);
+        }catch(err){
+            if(err.name !== "CastError"){
+                return resp.status(500).json({
+                    message: "Error finding Notification",
+                    error: err
+                });
+            }
+            return resp.status(404).json(notFound);
+        }
+
+        if(!notif){
+            return resp.status(404).json(notFound);
+        }
+
+        return resp.status(200).json(notif);
     }
 };
