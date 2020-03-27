@@ -59,20 +59,21 @@ module.exports = {
         }
         dbFilter = createFilter(filter);
 
-        let notifs;
+        let notifs, count;
         try{
-            notifs = await NotifSchema.find(dbFilter);
-            
-            if(range[0] !== 0 && range[0] !== range[1]){
-                notifs = notifs.slice(range[0]-1, range[1]-1);
+            if(range[0] === 0){
+                notifs = await NotifSchema.find(dbFilter);
+            }else{
+                notifs = await NotifSchema.find(dbFilter).skip((range[0]-1)*range[1]).limit(range[1]);
             }
+            count = await NotifSchema.count({});
         }catch(err){
             return resp.status(500).json({
                 message: "Error fetching notifications",
                 error: err
             });
         }
-
+        resp.set('Total-Documents', count);
         return resp.status(200).json(notifs);
     },
     create: async function(req, resp){
