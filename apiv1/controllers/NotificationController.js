@@ -34,8 +34,8 @@ function createFilter(params){
     }
 
     if(params.endTime){
-        filter.startTime = {
-            $lt: params.startTime
+        filter.endTime = {
+            $lt: params.endTime
         };
     }
 
