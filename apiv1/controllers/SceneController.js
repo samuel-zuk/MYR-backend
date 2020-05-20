@@ -28,13 +28,21 @@ function buildScene(body, dest = undefined){
 }
 
 module.exports = {
-    create: function(req, res){
+    create: async function(req, res){
         let body = req.body;
         if(Object.keys(body).length === 0 || !req.headers['x-access-token']){ //Check if a body was supplied
             return res.status(400).send("Bad Request");
         }
-        let newScene = buildScene(body);
-        newScene.uid = req.headers['x-access-token'];
+        let newScene = buildScene(body, body.settings);
+        let uid = await verifyGoogleToken(req.headers['x-access-token']);
+        if(!uid){
+            return res.status(401).json({
+                message: "Invalid token recieved",
+                error: "Unauthorized"
+            });
+        }
+        console.log(uid);
+        newScene.uid = uid;
         newScene.save(function (err, result){
             if(err){
                 return res.status(500).json({
