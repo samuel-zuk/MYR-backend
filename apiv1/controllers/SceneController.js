@@ -1,3 +1,4 @@
+let { verifyGoogleToken } = require('../authorization/verifyAuth.js');
 let SceneSchema = require('../models/SceneModel');
 
 /**
@@ -44,7 +45,7 @@ module.exports = {
             return res.status(201).send({_id: newScene.id});
         });
     },
-    list: function(req, resp){
+    list: async function(req, resp){
         if(!req.headers['x-access-token']){
             return resp.status(401).json({
                 message: "No userID supplied",
@@ -52,6 +53,17 @@ module.exports = {
             });
         }
         let uid = req.headers['x-access-token'];
+        if(uid !== "1"){
+            uid = await verifyGoogleToken(req.headers['x-access-token']);
+
+            if(!uid){
+                return resp.status(401).json({
+                    message: "Invalid token received",
+                    error: "Unauthorized"
+                });
+            }
+        }
+        
         SceneSchema.find({uid: uid}, function(err, scenes){
             if(err){
                 return resp.status(500).json({
@@ -59,7 +71,7 @@ module.exports = {
                     error: err
                 });
             }
-            if(scenes.length == 0){
+            if(scenes.length === 0){
                 return resp.status(204).send({}); //No Content Found
             }
             return resp.json(scenes);

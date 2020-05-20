@@ -13,6 +13,7 @@
 
 # local config
 /config
+/uploads
 
 # database exports
 /dump

@@ -3,7 +3,7 @@ let Schema = mongoose.Schema;
 
 let SceneSchema = new Schema({
     'name': String,
-    'uid': String,
+    'uid': mongoose.Types.ObjectId | String,
     'code': String,
     'settings': {
         'skyColor': String,
