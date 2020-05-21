@@ -1,14 +1,12 @@
 let { verifyGoogleToken } = require('../authorization/verifyAuth.js');
 let SceneSchema = require('../models/SceneModel');
 
-/**
- * Builds a scene from the given parameters
- * @param {Object} body A JSON object representing the scene
- * @param {SceneSchema} dest A SceneSchema to be updated (undefined by default)
- * 
- * @returns {SceneSchema} A SceneSchema that can be committed to the database
- */
-function buildScene(body, dest = undefined){
+const invalid_token = {
+    message: "Invalid token received",
+    error: "Unauthorized"
+};
+
+function buildScene(body, settings, dest = undefined){
     if(dest === undefined){
         return new SceneSchema({
             name: body.name,
@@ -33,25 +31,24 @@ module.exports = {
         if(Object.keys(body).length === 0 || !req.headers['x-access-token']){ //Check if a body was supplied
             return res.status(400).send("Bad Request");
         }
-        let newScene = buildScene(body, body.settings);
+        
         let uid = await verifyGoogleToken(req.headers['x-access-token']);
         if(!uid){
-            return res.status(401).json({
-                message: "Invalid token recieved",
-                error: "Unauthorized"
+            return res.status(401).json(invalid_token);
+        }
+
+        let newScene = buildScene(body, body.settings);
+        newScene.uid = uid;
+        try{
+            await newScene.save();
+        }catch(err){
+            return res.status(500).json({
+                message: 'Error creating scene',
+                error: err
             });
         }
-        console.log(uid);
-        newScene.uid = uid;
-        newScene.save(function (err, result){
-            if(err){
-                return res.status(500).json({
-                    message: 'Error creating scene',
-                    error: err
-                });
-            }
-            return res.status(201).send({_id: newScene.id});
-        });
+
+        return res.status(201).send({_id: newScene.id});
     },
     list: async function(req, resp){
         if(!req.headers['x-access-token']){
