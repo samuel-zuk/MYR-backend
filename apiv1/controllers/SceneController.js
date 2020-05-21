@@ -200,31 +200,35 @@ module.exports = {
         }
         return resp.json(scene);//No Content
     },
-    getByID: function(req, res){
+    getByID: async function(req, res){
         let id = req.params.id;
 
-        SceneSchema.findById(id, function (err, result){
-            if(result){//Err will be caught by catch function
-                res.json(result);
-            }
-        }).catch(function (err) {
+        let scene;
+
+        try{
+            scene = await SceneSchema.findById(id);
+        }catch(err) {
             //Might be a firebase ID
-            SceneSchema.findOne({firebaseID: id}, function(err, result){
-                if(err){
-                    return res.status(500).json({
-                        message: "Error Fetching Scenes",
-                        error: err
-                    });
-                }
-                //Not found
-                if(!result){
-                    return res.status(404).json({
-                        message: `Could not find Scene ${id}`,
-                        error: "Scene not found"
-                    });
-                }
-                res.redirect(301, `${result.id}`);
+            try{
+                scene = await SceneSchema.findOne({firebaseID: id});
+            }catch(err){
+                return res.status(500).json({
+                    message: "Error Fetching Scenes",
+                    error: err
+                });
+            }            
+        }
+        //Not found
+        if(!scene){
+            return res.status(404).json({
+                message: `Could not find Scene ${id}`,
+                error: "Scene not found"
             });
-        });
+        }
+        if(scene._id.toString() !== id){
+            return res.redirect(301, `${scene._id}`);
+        }
+
+        return res.status(200).json(scene);
     }
 };
