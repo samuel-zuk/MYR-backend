@@ -136,7 +136,7 @@ module.exports = {
         }
         return resp.send(204); //No Content
     },
-    update: function(req, resp){
+    update: async function(req, resp){
         let id = req.params.id;
         let body = req.body;
 
@@ -153,40 +153,52 @@ module.exports = {
                 error: (Object.keys(body) == 0 ? "No body provided" : "No settings provided")
             });
         }
-        let uid = req.headers['x-access-token'];
-
-        SceneSchema.findOne({_id: id}, function(err, scene){
-            if(err){
-                return resp.status(500).json({
-                    message: "Error getting scene",
-                    error: err
-                });
-            }
-            else if(!scene){
-                return resp.status(404).json({
-                    message: `Could not find scene "${id}"`,
-                    error: "Scene not found"
-                });
-            }
-            else if(scene.uid != uid){
-                return resp.status(401).json({
-                    message: `You do not own scene "${id}"`,
-                    error: "Unauthorized"
-                });
-            }
-            
-            buildScene(body, scene);
-
-            scene.save(function(err, scene){
-                if(err){
-                    return resp.status(500).json({
-                        message: "Error updating scene",
-                        error: err
-                    });
-                }
-                return resp.json(scene);//No Content
+        
+        let uid = await verifyGoogleToken(req.headers['x-access-token']);
+        if(!uid){
+            return resp.status(401).json({
+                message: "Invalid token recieved",
+                error: "Unauthorized"
             });
-        });
+        }
+
+        let scene;
+        try{
+            scene = await SceneSchema.findById(id);
+        }catch(err){
+            return resp.status(500).json({
+                message: "Error getting scene",
+                error: err
+            });
+        }
+        
+        if(!scene){
+            return resp.status(404).json({
+                message: `Could not find scene "${id}"`,
+                error: "Scene not found"
+            });
+        }
+        else if(scene.uid.toString() !== uid.toString()){
+            return resp.status(401).json({
+                message: `You do not own scene "${id}"`,
+                error: "Unauthorized"
+            });
+        }
+
+        scene.name = body.name;
+        scene.code = body.code;
+        scene.settings = body.settings;
+        scene.updateTime = new Date();
+
+        try{
+            await scene.save();
+        }catch(err){
+            return resp.status(500).json({
+                message: "Error updating scene",
+                error: err
+            });
+        }
+        return resp.json(scene);//No Content
     },
     getByID: function(req, res){
         let id = req.params.id;
