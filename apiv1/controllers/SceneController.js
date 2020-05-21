@@ -57,32 +57,33 @@ module.exports = {
                 error: "Unauthorized"
             });
         }
+
         let uid = req.headers['x-access-token'];
         if(uid !== "1"){
             uid = await verifyGoogleToken(req.headers['x-access-token']);
 
             if(!uid){
-                return resp.status(401).json({
-                    message: "Invalid token received",
-                    error: "Unauthorized"
-                });
+                return resp.status(401).json(invalid_token);
             }
         }
         
-        SceneSchema.find({uid: uid}, function(err, scenes){
-            if(err){
-                return resp.status(500).json({
-                    message: "Error finding scenes",
-                    error: err
-                });
-            }
-            if(scenes.length === 0){
-                return resp.status(204).send({}); //No Content Found
-            }
-            return resp.json(scenes);
-        });
+        let scenes;
+        try{
+            scenes = await SceneSchema.find({uid: uid});
+        }catch(err){
+            return resp.status(500).json({
+                message: "Error finding scenes",
+                error: err
+            });
+        }
+
+        if(scenes.length === 0){
+            return resp.status(204).send({}); //No Content Found
+        }
+
+        return resp.json(scenes);
     },
-    delete: function (req, resp){
+    delete: async function (req, resp){
         let id = req.params.id;
 
         if(!req.headers['x-access-token']){
@@ -92,40 +93,48 @@ module.exports = {
             });
         }
 
-        let uid = req.headers['x-access-token'];
+        let uid = await verifyGoogleToken(req.headers['x-access-token']);
+        if(!uid){
+            return resp.status(401).json({
+                message: "Invalid token recieved",
+                error: "Unauthorized"
+            });
+        }
 
-        //Check to make sure that the scene exists and is owned by the uid before removing it
-        SceneSchema.findById(id, function(err, scene){
-            if(err){
-                return resp.status(500).json({
-                    message: "Error deleting Scene",
-                    error: err
-                });
-            }
-            if(!scene){
-                return resp.status(404).json({
-                    message: `Could not find scene id "${id}"`,
-                    error: "Scene Not Found"
-                });
-            }
-            if(scene.uid != uid){
-                return resp.status(401).json({
-                    message: `You do not own scene "${id}"`,
-                    error: "Unauthorized"
-                });
-            }
-            else{
-                SceneSchema.findByIdAndRemove(id, function(err, scene){
-                    if(err){
-                        return resp.status(500).json({
-                            message: "Error deleting Scene",
-                            error: err
-                        });
-                    }
-                    return resp.send(204); //No Content
-                });
-            }
-        });
+        //Check to make sure that the scene exists
+        let scene;
+        try {
+            scene = await SceneSchema.findById(id);
+         }catch(err){
+            return resp.status(500).json({
+                message: "Error deleting Scene",
+                error: err
+            });
+        }
+        if(!scene){
+            return resp.status(404).json({
+                message: `Could not find scene id "${id}"`,
+                error: "Scene Not Found"
+            });
+        }
+
+        //Verify ownership of the scene before deleting it
+        if(scene.uid.toString() !== uid.toString()){
+            return resp.status(401).json({
+                message: `You do not own scene "${id}"`,
+                error: "Unauthorized"
+            });
+        }
+
+        try{
+            await SceneSchema.findByIdAndRemove(id);
+        }catch(err){
+            return resp.status(500).json({
+                message: "Error deleting Scene",
+                error: err
+            });
+        }
+        return resp.send(204); //No Content
     },
     update: function(req, resp){
         let id = req.params.id;
