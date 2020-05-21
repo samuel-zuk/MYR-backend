@@ -1,3 +1,4 @@
+let { verifyGoogleToken } = require("../authorization/verifyAuth");
 let SceneSchema = require('../models/SceneModel');
 let fs = require("fs");
 
@@ -67,46 +68,54 @@ async function isValidRequest(sceneID, uid, res, file = undefined, checkFile = f
         });
         return 401;
     }
+
+    uid = await verifyGoogleToken(uid);
+    if(!uid){
+        res.status(401).json({
+            message: "Invalid authentication token",
+            error: "Unauthorized"
+        });
+        return 401;
+    }
     
     //Find the scene
     let response = 0;
-
-    await SceneSchema.findById(sceneID, (err, scene) =>{
-        if(!err){     
-            if(!scene){
-                response = 404;
-                return res.status(response).json({
-                    message: `Could not find scene ${sceneID}`,
-                    error: "Scene not found"
-                });
-            }
-
-            if(scene.uid !== uid){
-                response = 401;
-                return res.status(response).json({
-                    message: `You do not own scene ${sceneID}`,
-                    error: "Unauthorized"
-                });
-            }
-            response = 200;
-            return;
-        }
-    //Catch invalid sceneID (strings that can't be cast to ObjectID)
-    }).catch(err => {
+    let scene;
+    try{
+        scene = await SceneSchema.findById(sceneID);
+    }catch(err){
         if(err.name === "CastError"){
-            response = 404;
-            return res.status(response).json({
+            res.status(response).json({
                 message: `Could not find scene ${sceneID}`,
                 error: "Scene not found"
             });
+            return 404;
         }
 
-        response = 500;
-        return res.status(500).json({
+        res.status(500).json({
             message: `Error fetching scene ${sceneID}`,
             error: err
         });
-    });
+        return 500;
+    }  
+
+    if(!scene){
+        response = 404;
+        return res.status(response).json({
+            message: `Could not find scene ${sceneID}`,
+            error: "Scene not found"
+        });
+    }
+
+    if(scene.uid.toString() !== uid.toString()){
+        response = 401;
+        return res.status(response).json({
+            message: `You do not own scene ${sceneID}`,
+            error: "Unauthorized"
+        });
+    }
+    response = 200;
+        
     return response;
 }
 
