@@ -14,7 +14,7 @@ let SceneSchema = new Schema({
         'camConfig': Number,
         'canFly': Boolean,
         'viewOnly': Boolean,
-        'collection': Schema.Types.ObjectId
+        'collection': String
     },
     'createTime': Date,
     'updateTime': Date
