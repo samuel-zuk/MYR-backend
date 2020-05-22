@@ -131,5 +131,55 @@ module.exports = {
         }
 
         return resp.status(200).json(scenes);
+    },
+    delete: async function(req, resp){
+        if(!req.headers["x-access-token"]){
+            return resp.status(400).json(noToken);
+        }
+
+        let collectID = req.params.id;
+        let uid = await verifyGoogleToken(req.headers["x-access-token"]);
+
+        if(!uid){
+            return resp.status(401).json(noToken);
+        }
+
+        let collect = undefined;
+        try{
+            collect = await CollectSchema.findOne({collectionID: collectID});
+        }catch(err){
+            return resp.status(500).json({
+                message: "Error fetching collection",
+                error: err
+            });
+        }
+
+        if(!collect){
+            return resp.status(404).json({
+                message: `${collectID} does not exist`,
+                error: "Not Found"
+            });
+        }
+        if(collect.uid.toString() !== uid.toString()){
+            return resp.status(401).json({
+                message: `You do not own ${collectID}`,
+                error: "Unauthorized"
+            });
+        }
+        try{
+            await collect.remove();
+            await SceneSchema.updateMany(
+                {"settings.collectionID": collectID},
+                {"$set": {
+                    "settings": {"collectionID": ""}
+                }
+            });
+        }catch(err){
+            return resp.status(500).json({
+                message: "Error removing collection",
+                error: err
+            });
+        }
+        return resp.status(204).send("");
     }
 };

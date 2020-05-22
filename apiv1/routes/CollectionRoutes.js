@@ -10,6 +10,6 @@ router.post('/', CollectControl.create);
 
 //router.put('/id/:id', CollectControl.update);
 
-//router.delete('/id/:id', CollectControl.remove);
+router.delete('/id/:id', CollectControl.delete);
 
 module.exports = router;
