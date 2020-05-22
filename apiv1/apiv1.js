@@ -21,6 +21,7 @@ let referenceExampleRouter = require('./routes/ReferenceExampleRoutes');
 let snapshotRouter = require('./routes/SnapshotRoutes');
 let defaultRouter = require('./routes/DefaultRoutes');
 let scenesRouter = require('./routes/SceneRoutes');
+let collectionRouter = require('./routes/CollectionRoutes');
 
 //sets the relative paths for the routers
 apiv1.use('/users', apiLimiter, userRouter);
@@ -29,6 +30,7 @@ apiv1.use('/courses', apiLimiter, courseRouter);
 apiv1.use('/referenceExamples', apiLimiter, referenceExampleRouter);
 apiv1.use('/snapshots', snapshotLimiter, snapshotRouter);
 apiv1.use('/scenes', apiLimiter, scenesRouter);
+apiv1.use('/collections', apiLimiter, collectionRouter);
 apiv1.use('/*', defaultRouter);
 
 module.exports = apiv1;
