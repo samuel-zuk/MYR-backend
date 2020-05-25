@@ -67,9 +67,9 @@ module.exports = {
                 error: "Conflict"
             });
         }
-
+        let result;
         try{
-            await CollectSchema.create({
+            result = await CollectSchema.create({
                 collectionID: collectID,
                 uid: uid,
                 timestamp: Date.now()
@@ -81,9 +81,7 @@ module.exports = {
             });
         }
 
-        return resp.status(201).json({
-            id: collectID
-        });
+        return resp.status(201).json(result);
     },
     show: async function(req, resp) {
         if(!req.headers["x-access-token"]){
