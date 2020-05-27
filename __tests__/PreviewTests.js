@@ -14,6 +14,8 @@ const invalid_image = fs.readFileSync(`${__dirname}/hi.jpeg`).toString("base64")
 
 const testFile = "/tmp/test.jpg";
 
+jest.mock("../apiv1/authorization/verifyAuth");
+
 describe("Creating a preview image", () =>{
    test("Creating an image without a user ID should return 401", () =>{
         return request(app).post(`${previewRef}/${sceneID}`).send({
