@@ -5,6 +5,7 @@ let SceneSchema = new Schema({
     'name': String,
     'uid': mongoose.Types.ObjectId | String,
     'code': String,
+    'desc': String,
     'settings': {
         'skyColor': String,
         'showFloor': Boolean,

@@ -11,7 +11,8 @@ function buildScene(body, settings, dest = undefined){
         return new SceneSchema({
             name: body.name,
             code: body.code,
-            settings: body.settings,
+            desc: body.desc,
+            settings: settings,
             createTime: new Date(),
             updateTime: new Date()
         });
@@ -187,6 +188,7 @@ module.exports = {
 
         scene.name = body.name;
         scene.code = body.code;
+        scene.desc = body.desc;
         scene.settings = body.settings;
         scene.updateTime = new Date();
 
