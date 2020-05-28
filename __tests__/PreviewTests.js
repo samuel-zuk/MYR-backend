@@ -6,7 +6,7 @@ const fs = require('fs');
 const previewRef = "/apiv1/scenes/preview";
 const sceneID = "5de934ec824a0a4598aa1fed";
 const altSceneID = "5de93a961466c65b7fda92dc";
-const validHeaders = {"x-access-token": "testing"};
+const validHeaders = {"x-access-token": "r1squCvH0uTbobuoTV9G"};
 
 const image_orig = `${__dirname}/img.jpeg`;
 const image = fs.readFileSync(image_orig).toString("base64");

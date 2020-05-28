@@ -85,11 +85,12 @@ async function isValidRequest(sceneID, uid, res, file = undefined, checkFile = f
         scene = await SceneSchema.findById(sceneID);
     }catch(err){
         if(err.name === "CastError"){
+            response = 404;
             res.status(response).json({
                 message: `Could not find scene ${sceneID}`,
                 error: "Scene not found"
             });
-            return 404;
+            return response;
         }
 
         res.status(500).json({
