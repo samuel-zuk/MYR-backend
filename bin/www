@@ -7,6 +7,7 @@
 let app = require('../app');
 let debug = require('debug')('react-backend:server');
 let http = require('http');
+let SocketHandler = require("../apiv1/websocketHandler");
 
 /**
  * Get port from environment and store in Express.
@@ -20,6 +21,12 @@ app.set('port', port);
  */
 
 let server = http.createServer(app);
+const io = require("socket.io").listen(server);
+
+io.sockets.on("connection", (socket) => {
+    new SocketHandler(socket);
+});
+
 
 /**
  * Listen on provided port, on all network interfaces.
