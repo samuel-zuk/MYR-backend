@@ -120,7 +120,7 @@ module.exports = {
         }
         let scenes = [];
         try{
-            scenes = await SceneSchema.find({"settings.collectionID": collectID});
+            scenes = await SceneSchema.find({"settings.collection": collectID});
         }catch(err){
             return resp.status(500).json({
                 message: "Error fetching collection scenes",

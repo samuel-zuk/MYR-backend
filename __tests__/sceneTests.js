@@ -4,6 +4,7 @@ const assert = require('assert');
 const ObjectId = require('mongoose').Types.ObjectId;
 
 jest.mock("../apiv1/authorization/verifyAuth");
+jest.useFakeTimers();
 
 function sceneIsEqual(scene1, scene2, name){
     let props1 = Object.getOwnPropertyNames(scene1);
