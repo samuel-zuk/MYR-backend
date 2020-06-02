@@ -1,10 +1,26 @@
-let { verifyGoogleToken } = require('../authorization/verifyAuth.js');
+let { verifyGoogleToken, isAdmin } = require('../authorization/verifyAuth.js');
 let SceneSchema = require('../models/SceneModel');
 
 const invalid_token = {
     message: "Invalid token received",
     error: "Unauthorized"
 };
+
+function createFilter(params){
+    let filter = {};
+
+    if(!params){
+        return filter;
+    }
+
+    if(params.title){
+        filter.title = new RegExp(params.title, 'i');
+    }
+    if(params.uid) {
+        filter.uid = params.uid;
+    }
+    return filter;
+}
 
 function buildScene(body, settings, dest = undefined){
     if(dest === undefined){
@@ -59,18 +75,37 @@ module.exports = {
             });
         }
 
+        let filter = undefined;
+        let range = [0, 0];
+
+        if(req.query.filter){
+            console.log(req.query.filter);
+            filter = JSON.parse(`${req.query.filter}`);
+        }
+        if(req.query.range){
+            console.log(req.query.range);
+            range = JSON.parse(`${req.query.range}`);
+        }
+        dbFilter = createFilter(filter);
+
         let uid = req.headers['x-access-token'];
+        let admin = await isAdmin(req.headers["x-access-token"]);
         if(uid !== "1"){
             uid = await verifyGoogleToken(req.headers['x-access-token']);
 
-            if(!uid){
+            if(!uid && !admin){
                 return resp.status(401).json(invalid_token);
             }
         }
         
         let scenes;
         try{
-            scenes = await SceneSchema.find({uid: uid});
+            if(admin){
+                scenes = await SceneSchema.find(dbFilter);
+                resp.set('Total-Documents', await SceneSchema.countDocuments({}));
+            }else{
+                scenes = await SceneSchema.find({uid: uid});
+            }
         }catch(err){
             return resp.status(500).json({
                 message: "Error finding scenes",
