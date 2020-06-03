@@ -1,5 +1,6 @@
 let { verifyGoogleToken, isAdmin } = require('../authorization/verifyAuth.js');
 let SceneSchema = require('../models/SceneModel');
+const ObjectId = require('mongoose').Types.ObjectId;
 
 const invalid_token = {
     message: "Invalid token received",
@@ -13,11 +14,13 @@ function createFilter(params){
         return filter;
     }
 
-    if(params.title){
-        filter.title = new RegExp(params.title, 'i');
+    if(params.name){
+        filter.name = new RegExp(params.name, 'i');
     }
     if(params.uid) {
-        filter.uid = params.uid;
+        try{
+            filter.uid = ObjectId(params.uid);
+        }catch(err){}
     }
     return filter;
 }
@@ -75,15 +78,13 @@ module.exports = {
             });
         }
 
-        let filter = undefined;
+        let filter;
         let range = [0, 0];
 
         if(req.query.filter){
-            console.log(req.query.filter);
             filter = JSON.parse(`${req.query.filter}`);
         }
         if(req.query.range){
-            console.log(req.query.range);
             range = JSON.parse(`${req.query.range}`);
         }
         dbFilter = createFilter(filter);
@@ -101,8 +102,8 @@ module.exports = {
         let scenes;
         try{
             if(admin){
-                scenes = await SceneSchema.find(dbFilter);
-                resp.set('Total-Documents', await SceneSchema.countDocuments({}));
+                scenes = await SceneSchema.find(dbFilter).skip(range[1] * (range[0]-1)).limit(range[1]);
+                resp.set('Total-Documents', await SceneSchema.countDocuments(dbFilter));
             }else{
                 scenes = await SceneSchema.find({uid: uid});
             }
