@@ -1,4 +1,4 @@
-let { verifyGoogleToken } = require("../authorization/verifyAuth");
+let { verifyGoogleToken, isAdmin } = require("../authorization/verifyAuth");
 let SceneSchema = require('../models/SceneModel');
 let fs = require("fs");
 
@@ -68,9 +68,9 @@ async function isValidRequest(sceneID, uid, res, file = undefined, checkFile = f
         });
         return 401;
     }
-
+    let admin = await isAdmin(uid);
     uid = await verifyGoogleToken(uid);
-    if(!uid){
+    if(!uid && !admin){
         res.status(401).json({
             message: "Invalid authentication token",
             error: "Unauthorized"
@@ -108,7 +108,7 @@ async function isValidRequest(sceneID, uid, res, file = undefined, checkFile = f
         });
     }
 
-    if(scene.uid.toString() !== uid.toString()){
+    if(scene.uid.toString() !== uid.toString() && !admin){
         response = 401;
         return res.status(response).json({
             message: `You do not own scene ${sceneID}`,
@@ -199,23 +199,20 @@ module.exports = {
         });
     },
 
-    delete: function (req, resp){
+    delete: async function (req, resp){
         let id = req.params.id;
         let uid = req.headers['x-access-token'];
         
-        isValidRequest(id, uid, resp).then((result) => {
-            if(result === 200){
-                if(!fs.existsSync(`${imgDest}/${id}.jpg`)){
-                    return resp.status(404).json({
-                        message: `Scene ${id} does not have an image`,
-                        error: "Image not found"
-                    });
-                }
-                fs.unlinkSync(`${imgDest}/${id}.jpg`);
+        let result = await isValidRequest(id, uid, resp);
+        if(result === 200){
+            if(this.deleteImage(id)){
                 return resp.status(204).send();
             }
-            return;
-        });
+            return resp.status(404).json({
+                message: `Could not find an image for scene ${id}`,
+                error: "Not found"
+            });
+        }
     },
 
     update: function(req, resp){
@@ -269,5 +266,25 @@ module.exports = {
             }
             return res.status(200).sendFile(`${imgDest}/${id}.jpg`);
         });
+    },
+    deleteImage: function(id){
+        if(!fs.existsSync(`${imgDest}/${id}.jpg`)){
+            return {
+                errorCode: 404,
+                error: "Not Found",
+                message: `No Image exists for ${id}`
+            };
+        }
+        
+        try{
+            fs.unlinkSync(`${imgDest}/${id}.jpg`);
+        }catch(err){
+            return {
+                errorCode: 500,
+                error: "Internal Server Error",
+                message: err
+            };
+        }
+        return true;
     }
 };

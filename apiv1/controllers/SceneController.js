@@ -1,4 +1,5 @@
 let { verifyGoogleToken, isAdmin } = require('../authorization/verifyAuth.js');
+const { deleteImage } = require('./ImageController');
 let SceneSchema = require('../models/SceneModel');
 const ObjectId = require('mongoose').Types.ObjectId;
 
@@ -131,7 +132,9 @@ module.exports = {
         }
 
         let uid = await verifyGoogleToken(req.headers['x-access-token']);
-        if(!uid){
+        let admin = await isAdmin(req.headers['x-access-token']);
+
+        if(!admin && !uid){
             return resp.status(401).json({
                 message: "Invalid token recieved",
                 error: "Unauthorized"
@@ -156,11 +159,16 @@ module.exports = {
         }
 
         //Verify ownership of the scene before deleting it
-        if(scene.uid.toString() !== uid.toString()){
+        if(scene.uid.toString() !== uid.toString() && !admin){
             return resp.status(401).json({
                 message: `You do not own scene "${id}"`,
                 error: "Unauthorized"
             });
+        }
+        
+        let result = deleteImage(id);
+        if(result !== true && result.errorCode === 500) {
+            return resp.status(500).json(result);
         }
 
         try{
@@ -171,7 +179,7 @@ module.exports = {
                 error: err
             });
         }
-        return resp.send(204); //No Content
+        return resp.status(204).send(""); //No Content
     },
     update: async function(req, resp){
         let id = req.params.id;
