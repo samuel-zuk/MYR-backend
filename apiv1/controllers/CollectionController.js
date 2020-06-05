@@ -1,6 +1,7 @@
 let CollectSchema = require("../models/CollectionModel");
 let SceneSchema = require("../models/SceneModel");
-let {verifyGoogleToken} = require('../authorization/verifyAuth.js');
+let {verifyGoogleToken, isAdmin} = require('../authorization/verifyAuth.js');
+const ObjectId = require('mongoose').Types.ObjectId;
 
 const noToken = {
     message: "No token was received",
@@ -11,19 +12,46 @@ const badToken = {
     error: "Unauthorized"
 };
 
+function createFilter(params){
+    let filter = {};
+
+    if(!params){
+        return filter;
+    }
+
+    if(params.collectionID){
+        filter.collectionID = new RegExp(params.collectionID, 'i');
+    }
+    if(params.uid) {
+        try{
+            filter.uid = ObjectId(params.uid);
+        }catch(err){}
+    }
+    return filter;
+}
+
 module.exports = {
     list: async function(req, resp) {
         if(!req.headers["x-access-token"]){
             return resp.status(400).json(noToken);
         }
         let uid = await verifyGoogleToken(req.headers["x-access-token"]);
+        let admin = await isAdmin(req.headers["x-access-token"]);
 
-        if(!uid){
+        if(!uid && !admin){
             return resp.status(401).json(badToken);
         }
-        let collects = undefined;
+        let filter = createFilter(JSON.parse(`${req.query.filter}`));
+        let range = JSON.parse(`${req.query.range}`);
+
+        let collects;
         try{
-            collects = await CollectSchema.find({uid: uid});
+            if(admin){
+                collects = await CollectSchema.find(filter).skip(range[1]*(range[0]-1)).limit(range[1]);
+                resp.set('Total-Documents', await CollectSchema.countDocuments(filter));
+            }else{
+                collects = await CollectSchema.find({uid: uid});
+            }
         }catch(err){
             return resp.status(500).json({
                 message: "Error fetching collections",
@@ -90,12 +118,13 @@ module.exports = {
 
         let collectID = req.params.id;
         let uid = await verifyGoogleToken(req.headers["x-access-token"]);
+        let admin = await isAdmin(req.headers["x-access-token"]);
 
-        if(!uid){
+        if(!uid && !admin){
             return resp.status(401).json(badToken);
         }
 
-        let collect = undefined;
+        let collect;
         try{
             collect = await CollectSchema.findOne({collectionID: collectID});
         }catch(err){
@@ -112,7 +141,7 @@ module.exports = {
             });
         }
         
-        if(collect.uid.toString() !== uid.toString()){
+        if(collect.uid.toString() !== uid.toString() && !admin){
             return resp.status(401).json({
                 message: `You do not own "${collectID}"`,
                 error: "Unauthorized"
@@ -179,5 +208,48 @@ module.exports = {
             });
         }
         return resp.status(204).send("");
+    },
+    getByID: async function(req, resp){
+        if(!req.headers["x-access-token"]){
+            return resp.status(400).json(noToken);
+        }
+
+        let id = req.params.id;
+        let admin = await isAdmin(req.headers["x-access-token"]);
+
+        if(!admin){
+            return resp.status(401).json(badToken);
+        }
+
+        let collect;
+        try{
+            collect = await CollectSchema.findById(id);
+        }catch(err){
+            return resp.status(500).json({
+                message: "Error fetching collection",
+                error: err
+            });
+        }
+
+        if(!collect){
+            return resp.status(404).json({
+                message: `${collectID} does not exist`,
+                error: "Not Found"
+            });
+        }
+        
+        let scenes = [];
+        try{
+            scenes = await SceneSchema.find({"settings.collection": collect.collectionID});
+        }catch(err){
+            return resp.status(500).json({
+                message: "Error fetching collection scenes",
+                error: err
+            });
+        }
+        return resp.status(200).json({ 
+            scenes: scenes,
+            ...(collect.toJSON())
+        });
     }
 };

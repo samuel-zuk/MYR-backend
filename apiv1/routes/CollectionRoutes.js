@@ -4,7 +4,8 @@ let CollectControl = require("../controllers/CollectionController");
 
 router.get('/', CollectControl.list);
 
-router.get('/id/:id', CollectControl.show);
+router.get('/collectID/:id', CollectControl.show);
+router.get('/id/:id', CollectControl.getByID);
 
 router.post('/', CollectControl.create);
 
