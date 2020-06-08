@@ -22,6 +22,7 @@ let snapshotRouter = require('./routes/SnapshotRoutes');
 let defaultRouter = require('./routes/DefaultRoutes');
 let scenesRouter = require('./routes/SceneRoutes');
 let collectionRouter = require('./routes/CollectionRoutes');
+let googleLoginRouter = require('./routes/GoogleLoginRoutes');
 
 //sets the relative paths for the routers
 apiv1.use('/users', apiLimiter, userRouter);
@@ -31,6 +32,7 @@ apiv1.use('/referenceExamples', apiLimiter, referenceExampleRouter);
 apiv1.use('/snapshots', snapshotLimiter, snapshotRouter);
 apiv1.use('/scenes', apiLimiter, scenesRouter);
 apiv1.use('/collections', apiLimiter, collectionRouter);
+apiv1.use('/googlelogins/', apiLimiter, googleLoginRouter);
 apiv1.use('/*', defaultRouter);
 
 module.exports = apiv1;

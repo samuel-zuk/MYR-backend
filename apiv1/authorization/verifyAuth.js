@@ -31,7 +31,7 @@ module.exports = {
             if(!user){
                 try{
                     user = await GoogleLoginModel.findOne({email: ticket.payload["email"]});
-                    user.update({googleId: ticket.payload["sub"]});
+                    await user.update({googleId: ticket.payload["sub"]});
                 }catch(err){
                     user = await GoogleLoginModel.create({
                         email: ticket.payload["email"],
