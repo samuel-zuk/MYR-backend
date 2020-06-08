@@ -53,45 +53,45 @@ describe("Test collection creation", () => {
 
 describe("Test scene listing for collections", () => {
     test("Not providing a userID should return 400", () => {
-        return request(app).get(`${collectRef}/id/testing`).expect(400);
+        return request(app).get(`${collectRef}/collectionID/testing`).expect(400);
     });
     test("Providing an invalid userID should return 401", () => {
-        return request(app).get(`${collectRef}/id/testing`).set({"x-access-token": "bobross"}).expect(401);
+        return request(app).get(`${collectRef}/collectionID/testing`).set({"x-access-token": "bobross"}).expect(401);
     });
     test("Providing a user ID that does not own the collection should return 401", () => {
-        return request(app).get(`${collectRef}/id/testing`).set({"x-access-token": emptyToken[0]}).expect(401);
+        return request(app).get(`${collectRef}/collectionID/testing`).set({"x-access-token": emptyToken[0]}).expect(401);
     });
     test("Providing the correct user ID should return 200 with a list of scenes in that collection", () => {
-        return request(app).get(`${collectRef}/id/testing`).set({"x-access-token": populatedToken[0]}).expect(200).then((resp) => {
+        return request(app).get(`${collectRef}/collectionID/testing`).set({"x-access-token": populatedToken[0]}).expect(200).then((resp) => {
             const json = resp.body;
 
             assert(json.length === 2, `Expected 2 scenes to be returned, got ${json.length}`);
         });
     });
     test("Providing the correct user ID on an empty collection should return 200 and an empty array", () => {
-        return request(app).get(`${collectRef}/id/bobross`).set({"x-access-token": emptyToken[0]}).expect(200).then((resp) => {
+        return request(app).get(`${collectRef}/collectionID/bobross`).set({"x-access-token": emptyToken[0]}).expect(200).then((resp) => {
             assert(resp.body.length === 0, `Expected 0 elements, got ${resp.body.length}`);
         });
     });
     test("Fetching scenes from a non-existent collection should return 404", () => {
-        return request(app).get(`${collectRef}/id/bobbyjimbobphil`).set({"x-access-token": emptyToken[0]}).expect(404); 
+        return request(app).get(`${collectRef}/collectionID/bobbyjimbobphil`).set({"x-access-token": emptyToken[0]}).expect(404); 
     });
 });
 
 describe("Test collection deleting", () => { 
     test("Not providing a userID should return 400", () => {
-        return request(app).delete(`${collectRef}/id/bobross`).expect(400);
+        return request(app).delete(`${collectRef}/collectionID/bobross`).expect(400);
     });
     test("Providing an invalid userID should return 401", () => {
-        return request(app).delete(`${collectRef}/id/bobross`).set({"x-access-token": "bobross"}).expect(401);
+        return request(app).delete(`${collectRef}/collectionID/bobross`).set({"x-access-token": "bobross"}).expect(401);
     });
     test("Providing a user ID that does not own the collection should return 401", () => {
-        return request(app).delete(`${collectRef}/id/bobross`).set({"x-access-token": populatedToken[0]}).expect(401);
+        return request(app).delete(`${collectRef}/collectionID/bobross`).set({"x-access-token": populatedToken[0]}).expect(401);
     });
     test("Deleting a non-existent collection should return 404", () => {
-        return request(app).delete(`${collectRef}/id/bobbyjimbobphil`).set({"x-access-token": emptyToken[0]}).expect(404);
+        return request(app).delete(`${collectRef}/collectionID/bobbyjimbobphil`).set({"x-access-token": emptyToken[0]}).expect(404);
     });
     test("Deleting a collection with proper authentication should return 204", () => {
-        return request(app).delete(`${collectRef}/id/bobross`).set({"x-access-token": emptyToken[0]}).expect(204);
+        return request(app).delete(`${collectRef}/collectionID/bobross`).set({"x-access-token": emptyToken[0]}).expect(204);
     });
 });

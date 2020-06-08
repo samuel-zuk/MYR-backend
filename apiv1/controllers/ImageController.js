@@ -12,6 +12,27 @@ const notFound = `${root}/public/img/no_preview.jpg`;
 
 const tmp = "/tmp";
 
+function deleteImage(id){
+    if(!fs.existsSync(`${imgDest}/${id}.jpg`)){
+        return {
+            errorCode: 404,
+            error: "Not Found",
+            message: `No Image exists for ${id}`
+        };
+    }
+    
+    try{
+        fs.unlinkSync(`${imgDest}/${id}.jpg`);
+    }catch(err){
+        return {
+            errorCode: 500,
+            error: "Internal Server Error",
+            message: err
+        };
+    }
+    return true;
+}
+
 /**
  * Creates an image based off of a data URL
  * 
@@ -267,24 +288,5 @@ module.exports = {
             return res.status(200).sendFile(`${imgDest}/${id}.jpg`);
         });
     },
-    deleteImage: function(id){
-        if(!fs.existsSync(`${imgDest}/${id}.jpg`)){
-            return {
-                errorCode: 404,
-                error: "Not Found",
-                message: `No Image exists for ${id}`
-            };
-        }
-        
-        try{
-            fs.unlinkSync(`${imgDest}/${id}.jpg`);
-        }catch(err){
-            return {
-                errorCode: 500,
-                error: "Internal Server Error",
-                message: err
-            };
-        }
-        return true;
-    }
+    deleteImage: deleteImage
 };
