@@ -6,7 +6,7 @@ let config = require('../config/config');
 let UserModel = require('../models/UserModel.js');
 let GoogleLoginModel = require("../models/GoogleLoginModel");
 
-const CLIENTID = "12320757914-puvjd9tbs79sc19sl433gqp9sci1tfqt.apps.googleusercontent.com";
+const CLIENTID = process.env.GOOGLE_OAUTH2_CLIENTID;
 const client = new OAuth2Client(CLIENTID);
 
 // let sync = require('synchronize');

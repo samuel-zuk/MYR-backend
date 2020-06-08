@@ -4,11 +4,10 @@ let fs = require("fs");
 
 const JPG = ["FFD8FFDB", "FFD8FFE0"];
 
-const root = (process.env.CI === "true" ? `${process.env.HOME}/mern-starter` : 
-    `${process.env.HOME}/MYR/backend`);
+const root = (process.env.ROOT ? process.env.ROOT : './');
 
-const imgDest = `${root}/uploads`;
-const notFound = `${root}/public/img/no_preview.jpg`;
+const imgDest = './uploads';
+const notFound = './public/img/no_preview.jpg';
 
 const tmp = "/tmp";
 
@@ -280,12 +279,12 @@ module.exports = {
                 });
             }
             if(!scene){
-                return res.status(404).sendFile(notFound);
+                return res.status(404).sendFile(notFound, {root: root});
             }
             if(!fs.existsSync(`${imgDest}/${id}.jpg`)){
-                return res.status(404).sendFile(notFound);
+                return res.status(404).sendFile(notFound, {root: root});
             }
-            return res.status(200).sendFile(`${imgDest}/${id}.jpg`);
+            return res.status(200).sendFile(`${imgDest}/${id}.jpg`, {root: root});
         });
     },
     deleteImage: deleteImage
