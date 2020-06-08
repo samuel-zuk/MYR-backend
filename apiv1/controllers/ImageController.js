@@ -226,7 +226,7 @@ module.exports = {
         
         let result = await isValidRequest(id, uid, resp);
         if(result === 200){
-            if(deleteImage(id)){
+            if(deleteImage(id) === true){
                 return resp.status(204).send();
             }
             return resp.status(404).json({
