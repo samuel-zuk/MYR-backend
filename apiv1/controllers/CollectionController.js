@@ -41,8 +41,15 @@ module.exports = {
         if(!uid && !admin){
             return resp.status(401).json(badToken);
         }
-        let filter = createFilter(JSON.parse(`${req.query.filter}`));
-        let range = JSON.parse(`${req.query.range}`);
+        let filter = {};
+        if(req.query.filter){
+            filter = createFilter(JSON.parse(`${req.query.filter}`));
+        }
+
+        let range = [0, 0];
+        if(req.query.range){
+            range = JSON.parse(`${req.query.range}`);
+        }
 
         let collects;
         try{
@@ -116,7 +123,7 @@ module.exports = {
             return resp.status(400).json(noToken);
         }
 
-        let collectID = req.params.id;
+        let collectID = req.params.collectionName;
         let uid = await verifyGoogleToken(req.headers["x-access-token"]);
         let admin = await isAdmin(req.headers["x-access-token"]);
 
@@ -149,7 +156,7 @@ module.exports = {
         }
         let scenes = [];
         try{
-            scenes = await SceneSchema.find({"settings.collection": collectID});
+            scenes = await SceneSchema.find({"settings.collectionID": collectID});
         }catch(err){
             return resp.status(500).json({
                 message: "Error fetching collection scenes",
@@ -164,7 +171,7 @@ module.exports = {
             return resp.status(400).json(noToken);
         }
 
-        let collectID = req.params.id;
+        let collectID = req.params.collectionName;
         let uid = await verifyGoogleToken(req.headers["x-access-token"]);
 
         if(!uid){
@@ -240,7 +247,7 @@ module.exports = {
         
         let scenes = [];
         try{
-            scenes = await SceneSchema.find({"settings.collection": collect.collectionID});
+            scenes = await SceneSchema.find({"settings.collectionID": collect.collectionID});
         }catch(err){
             return resp.status(500).json({
                 message: "Error fetching collection scenes",
