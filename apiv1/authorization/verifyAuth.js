@@ -16,14 +16,13 @@ const client = new OAuth2Client(CLIENTID);
 
 module.exports = {
     verifyGoogleToken: async function (token) {
-        let ticket = undefined;
-        ticket = await client.verifyIdToken({
+        let ticket = await client.verifyIdToken({
             idToken: token,
             audience: CLIENTID
         }).catch(() => {});
 
         if(ticket){
-            let user = undefined;
+            let user;
             try{
                 user = await GoogleLoginModel.findOne({googleId: ticket.payload["sub"]});
             }catch(err){}

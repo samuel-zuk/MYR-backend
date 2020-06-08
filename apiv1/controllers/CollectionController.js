@@ -51,13 +51,13 @@ module.exports = {
             range = JSON.parse(`${req.query.range}`);
         }
 
-        let collects;
+        let collections;
         try{
             if(admin){
-                collects = await CollectSchema.find(filter).skip(range[1]*(range[0]-1)).limit(range[1]);
+                collections = await CollectSchema.find(filter).skip(range[1]*(range[0]-1)).limit(range[1]);
                 resp.set('Total-Documents', await CollectSchema.countDocuments(filter));
             }else{
-                collects = await CollectSchema.find({uid: uid});
+                collections = await CollectSchema.find({uid: uid});
             }
         }catch(err){
             return resp.status(500).json({
@@ -65,10 +65,10 @@ module.exports = {
                 error: err
             });
         }
-        if(!collects || collects.length == 0){
+        if(!collections || collections.length == 0){
             return resp.status(204).send("");
         }
-        return resp.status(200).json(collects);
+        return resp.status(200).json(collections);
     },
     create: async function(req, resp) {
         if(!req.headers["x-access-token"]){
@@ -86,9 +86,9 @@ module.exports = {
             return resp.status(401).json(badToken);
         }
 
-        let collects = [];
+        let collections = [];
         try{
-            collects = await CollectSchema.find({"collectionID": collectID});
+            collections = await CollectSchema.find({"collectionID": collectID});
         }catch(err){
             return resp.status(500).json({
                 message: "Error fetching collections",
@@ -96,7 +96,7 @@ module.exports = {
             });
         }
 
-        if(collects.length > 0){
+        if(collections.length > 0){
             return resp.status(409).json({
                 message: `${collectID} already exists as a collection`,
                 error: "Conflict"
@@ -123,7 +123,7 @@ module.exports = {
             return resp.status(400).json(noToken);
         }
 
-        let collectID = req.params.collectionName;
+        let collectionID = req.params.collectionName;
         let uid = await verifyGoogleToken(req.headers["x-access-token"]);
         let admin = await isAdmin(req.headers["x-access-token"]);
 
@@ -131,9 +131,9 @@ module.exports = {
             return resp.status(401).json(badToken);
         }
 
-        let collect;
+        let collection;
         try{
-            collect = await CollectSchema.findOne({collectionID: collectID});
+            collection = await CollectSchema.findOne({collectionID: collectionID});
         }catch(err){
             return resp.status(500).json({
                 message: "Error fetching collection",
@@ -141,22 +141,22 @@ module.exports = {
             });
         }
 
-        if(!collect){
+        if(!collection){
             return resp.status(404).json({
-                message: `${collectID} does not exist`,
+                message: `${collectionID} does not exist`,
                 error: "Not Found"
             });
         }
         
-        if(collect.uid.toString() !== uid.toString() && !admin){
+        if(collection.uid.toString() !== uid.toString() && !admin){
             return resp.status(401).json({
-                message: `You do not own "${collectID}"`,
+                message: `You do not own "${collectionID}"`,
                 error: "Unauthorized"
             });
         }
         let scenes = [];
         try{
-            scenes = await SceneSchema.find({"settings.collectionID": collectID});
+            scenes = await SceneSchema.find({"settings.collectionID": collectionID});
         }catch(err){
             return resp.status(500).json({
                 message: "Error fetching collection scenes",
@@ -171,16 +171,16 @@ module.exports = {
             return resp.status(400).json(noToken);
         }
 
-        let collectID = req.params.collectionName;
+        let collectionID = req.params.collectionName;
         let uid = await verifyGoogleToken(req.headers["x-access-token"]);
 
         if(!uid){
             return resp.status(401).json(noToken);
         }
 
-        let collect = undefined;
+        let collection;
         try{
-            collect = await CollectSchema.findOne({collectionID: collectID});
+            collection = await CollectSchema.findOne({collectionID: collectionID});
         }catch(err){
             return resp.status(500).json({
                 message: "Error fetching collection",
@@ -188,22 +188,22 @@ module.exports = {
             });
         }
 
-        if(!collect){
+        if(!collection){
             return resp.status(404).json({
-                message: `${collectID} does not exist`,
+                message: `${collectionID} does not exist`,
                 error: "Not Found"
             });
         }
-        if(collect.uid.toString() !== uid.toString()){
+        if(collection.uid.toString() !== uid.toString()){
             return resp.status(401).json({
-                message: `You do not own ${collectID}`,
+                message: `You do not own ${collectionID}`,
                 error: "Unauthorized"
             });
         }
         try{
-            await collect.remove();
+            await collection.remove();
             await SceneSchema.updateMany(
-                {"settings.collectionID": collectID},
+                {"settings.collectionID": collectionID},
                 {"$set": {
                     "settings": {"collectionID": ""}
                 }
@@ -228,9 +228,9 @@ module.exports = {
             return resp.status(401).json(badToken);
         }
 
-        let collect;
+        let collection;
         try{
-            collect = await CollectSchema.findById(id);
+            collection = await CollectSchema.findById(id);
         }catch(err){
             return resp.status(500).json({
                 message: "Error fetching collection",
@@ -238,16 +238,16 @@ module.exports = {
             });
         }
 
-        if(!collect){
+        if(!collection){
             return resp.status(404).json({
-                message: `${collectID} does not exist`,
+                message: `${id} does not exist`,
                 error: "Not Found"
             });
         }
         
         let scenes = [];
         try{
-            scenes = await SceneSchema.find({"settings.collectionID": collect.collectionID});
+            scenes = await SceneSchema.find({"settings.collectionID": collection.collectionID});
         }catch(err){
             return resp.status(500).json({
                 message: "Error fetching collection scenes",
@@ -256,7 +256,7 @@ module.exports = {
         }
         return resp.status(200).json({ 
             scenes: scenes,
-            ...(collect.toJSON())
+            ...(collection.toJSON())
         });
     }
 };
