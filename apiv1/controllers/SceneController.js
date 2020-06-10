@@ -71,6 +71,7 @@ module.exports = {
 
         return res.status(201).send({_id: newScene.id});
     },
+
     list: async function(req, resp){
         if(!req.headers['x-access-token']){
             return resp.status(401).json({
@@ -121,6 +122,7 @@ module.exports = {
 
         return resp.json(scenes);
     },
+
     delete: async function (req, resp){
         let id = req.params.id;
 
@@ -181,6 +183,7 @@ module.exports = {
         }
         return resp.status(204).send(""); //No Content
     },
+
     update: async function(req, resp){
         let id = req.params.id;
         let body = req.body;
@@ -246,6 +249,7 @@ module.exports = {
         }
         return resp.json(scene);//No Content
     },
+
     getByID: async function(req, res){
         let id = req.params.id;
 
@@ -277,6 +281,7 @@ module.exports = {
 
         return res.status(200).json(scene);
     },
+
     getExamples: async function(req, resp){
         let scenes;
 
@@ -291,6 +296,7 @@ module.exports = {
 
         return resp.status(200).json(scenes);
     },
+    
     promoteScene: async function(req, resp) {
         let admin = await isAdmin(req.headers['x-access-token']);
 

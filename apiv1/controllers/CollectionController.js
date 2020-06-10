@@ -70,6 +70,7 @@ module.exports = {
         }
         return resp.status(200).json(collections);
     },
+
     create: async function(req, resp) {
         if(!req.headers["x-access-token"]){
             return resp.status(400).json(noToken);
@@ -118,6 +119,7 @@ module.exports = {
 
         return resp.status(201).json(result);
     },
+
     show: async function(req, resp) {
         if(!req.headers["x-access-token"]){
             return resp.status(400).json(noToken);
@@ -166,6 +168,7 @@ module.exports = {
 
         return resp.status(200).json(scenes);
     },
+
     delete: async function(req, resp){
         if(!req.headers["x-access-token"]){
             return resp.status(400).json(noToken);
@@ -216,6 +219,7 @@ module.exports = {
         }
         return resp.status(204).send("");
     },
+    
     getByID: async function(req, resp){
         if(!req.headers["x-access-token"]){
             return resp.status(400).json(noToken);

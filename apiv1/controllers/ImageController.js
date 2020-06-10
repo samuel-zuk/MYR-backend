@@ -287,5 +287,6 @@ module.exports = {
             return res.status(200).sendFile(`${imgDest}/${id}.jpg`, {root: root});
         });
     },
+    
     deleteImage: deleteImage
 };

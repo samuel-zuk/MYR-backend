@@ -46,6 +46,7 @@ module.exports = {
 
         return resp.status(200).json(accounts);
     },
+    
     getByID: async function(req, resp) {
         let admin = await isAdmin(req.headers['x-access-token']);
 
