@@ -276,5 +276,54 @@ module.exports = {
         }
 
         return res.status(200).json(scene);
+    },
+    getExamples: async function(req, resp){
+        let scenes;
+
+        try{
+            scenes = await SceneSchema.find({"uid": "1"});
+        }catch(err){
+            return resp.status(500).json({
+                message: "Error Fetching Example Scenes",
+                error: err
+            });
+        }
+
+        return resp.status(200).json(scenes);
+    },
+    promoteScene: async function(req, resp) {
+        let admin = await isAdmin(req.headers['x-access-token']);
+
+        if(!admin){
+            return resp.status(401).json({
+                message: "You are not authorized to do this",
+                error: "Unauthorized"
+            });
+        }
+
+        let scene;
+        try {
+            scene = await SceneSchema.findById(ObjectId(req.body.id));
+
+            if(!scene){
+                return resp.status(404).json({
+                    message: `Could not find scene with ID ${req.body.id}`,
+                    error: "Not Found"
+                });
+            }
+            scene.uid = "1";
+            scene._id = ObjectId();
+            scene.isNew = true;
+            await scene.save();
+        }catch(err){
+            return resp.status(500).json({
+                message: "Error creating copy of scene",
+                error: err.toString()
+            });
+        }
+
+        return resp.status(200).json({
+            id: scene._id
+        });
     }
 };
