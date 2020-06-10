@@ -104,10 +104,17 @@ module.exports = {
     /**
      * SnapshotController.show_via_snapshotNumber()
      */
-    show_via_details: function (req, res) {
-        let user = req.params.user;
+    show_via_details: async function (req, res) {
+        let user = await verify.verifyGoogleToken(req.params.user);
         let timestamp = req.params.timestamp;
-        SnapshotModel.findOne({ user: user, timestamp: timestamp }, function (err, Snapshot) {
+
+        if(!user){
+            return res.status(401).json({
+                message: "Invalid token received",
+                error: "Unauthorized"
+            });
+        }
+        SnapshotModel.findOne({ user: user.toString(), timestamp: timestamp }, function (err, Snapshot) {
             if (err) {
                 return res.status(500).json({
                     message: 'Error when getting Snapshot.',
@@ -129,9 +136,16 @@ module.exports = {
     /*
      * Will not allow duplicate snapshots at same time by same user
      */
-    create: function (req, res) {
+    create: async function (req, res) {
+        let user = await verify.verifyGoogleToken(req.body.user);
+        if(!user && req.body.user !== 'anon'){
+            return res.status(401).json({
+                message: "Recieved invalid token",
+                error: "Unauthorized"
+            });
+        }
         let newSnapshot = new SnapshotModel({
-            user: req.body.user,
+            user: user || 'anon',
             timestamp: req.body.timestamp,
             text: req.body.text,
             error: req.body.error
