@@ -4,10 +4,10 @@ let fs = require("fs");
 
 const JPG = ["FFD8FFDB", "FFD8FFE0"];
 
-const root = (process.env.ROOT ? process.env.ROOT : './');
+const root = (process.env.ROOT ? process.env.ROOT : '.');
 
-const imgDest = './uploads';
-const notFound = './public/img/no_preview.jpg';
+const imgDest = `${root}/uploads`;
+const notFound = `${root}/public/img/no_preview.jpg`;
 
 const tmp = "/tmp";
 
@@ -288,5 +288,6 @@ module.exports = {
         });
     },
     
-    deleteImage: deleteImage
+    deleteImage: deleteImage,
+    destFolder: imgDest
 };

@@ -1,7 +1,9 @@
 let { verifyGoogleToken, isAdmin } = require('../authorization/verifyAuth.js');
-const { deleteImage } = require('./ImageController');
+const { deleteImage, destFolder } = require('./ImageController');
 let SceneSchema = require('../models/SceneModel');
+
 const ObjectId = require('mongoose').Types.ObjectId;
+const fs = require('fs');
 
 const invalid_token = {
     message: "Invalid token received",
@@ -327,9 +329,16 @@ module.exports = {
                 error: err.toString()
             });
         }
-
+        
+        let imgError;
+        try{
+            fs.copyFileSync(`${destFolder}/${req.body.id}.jpg`, `${destFolder}/${scene._id.toString()}.jpg`);
+        }catch(err){
+            imgError = err.toString();
+        }
         return resp.status(200).json({
-            id: scene._id
+            id: scene._id,
+            imgError: imgError
         });
     }
 };
