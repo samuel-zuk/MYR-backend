@@ -117,11 +117,6 @@ module.exports = {
                 error: err
             });
         }
-
-        if(scenes.length === 0){
-            return resp.status(204).send({}); //No Content Found
-        }
-
         return resp.json(scenes);
     },
 
