@@ -23,7 +23,9 @@ function createFilter(params){
     if(params.uid) {
         try{
             filter.uid = ObjectId(params.uid);
-        }catch(err){}
+        }catch(err){
+            filter.uid = params.uid;
+        }
     }
     return filter;
 }
