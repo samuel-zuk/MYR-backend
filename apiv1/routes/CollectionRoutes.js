@@ -5,6 +5,7 @@ let CollectControl = require("../controllers/CollectionController");
 router.get('/', CollectControl.list);
 
 router.get('/collectionID/:collectionName', CollectControl.show);
+router.get(`/collectionID/:collectionID/exists`, CollectControl.exists);
 router.get('/id/:id', CollectControl.getByID);
 
 router.post('/', CollectControl.create);

@@ -262,5 +262,30 @@ module.exports = {
             scenes: scenes,
             ...(collection.toJSON())
         });
+    },
+
+    exists: async function(req, resp) {
+        let collectionID = req.params.collectionID;
+
+        let collection;
+        try {
+            collection = await CollectSchema.findOne({collectionID: collectionID});
+        }catch(err){
+            return resp.status(500).json({
+                message: "Error fetching collection",
+                error: err
+            });
+        }
+
+        if(!collection){
+            return resp.status(404).json({
+                message: `Collection ${collectionID} does not exist`,
+                error: "Not found"
+            });
+        }
+
+        return resp.status(200).json({
+            message: `Collection ${collectionID} exists!`
+        });
     }
 };
