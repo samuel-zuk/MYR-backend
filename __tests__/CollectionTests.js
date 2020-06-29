@@ -29,6 +29,15 @@ describe("Test collection fetching", () => {
     });
 });
 
+describe("Test collection existence endpoint", () => {
+    test("A collection that doesn't exist should return 404", () => {
+        return request(app).get(`${collectRef}/collectionID/bobross/exists`).expect(404);
+    });
+    test("A collection that does exist should return 200", () => {
+        return request(app).get(`${collectRef}/collectionID/testing/exists`).expect(200);
+    });
+});
+
 describe("Test collection creation", () => {
     test("Not providing a user ID should return 400", () => {
         return request(app).post(collectRef).send({"collectID": "bobross"}).expect(400);
