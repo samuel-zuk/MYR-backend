@@ -5,10 +5,14 @@ let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let cors = require('cors');
 
+require('dotenv').config();
+
+const uploadLimit = "1mb";
+
 //sets the database connection details
 let mongoose = require('mongoose');
-let mongoDB = 'mongodb://127.0.0.1:27017/ecg-myr';
-mongoose.connect(mongoDB, { useNewUrlParser: true });
+let mongoDB = (process.env.MONGO_CONNECTION_STRING ? process.env.MONGO_CONNECTION_STRING : 'mongodb://127.0.0.1:27017/ecg-myr');
+mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Get Mongoose to use the global promise library
 mongoose.Promise = global.Promise;
@@ -33,8 +37,7 @@ app.set('view engine', 'pug');
 
 app.use(cors());
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({limit: uploadLimit}));
 app.use(cookieParser());
 
 
