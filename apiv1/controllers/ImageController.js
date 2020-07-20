@@ -208,10 +208,12 @@ module.exports = {
                     cleanup(file.path);
                     return;
                 }
-                fs.renameSync(file.path, `${imgDest}/${id}.jpg`);
-                res.status(201).json({
-                    message: "Created"
-                });
+                if(createImage(req.body.data, `${imgDest}/${id}.jpg`)) {
+                    res.status(201).json({
+                        message: "Created"
+                    });
+                }
+                cleanup(file.path);
             }else if(file){
                 cleanup(file.path);
             }
@@ -259,8 +261,10 @@ module.exports = {
                     cleanup(file.path);
                     return;
                 }
-                fs.renameSync(file.path, `${imgDest}/${id}.jpg`);
-                resp.status(204).send();
+                if(createImage(req.body.data, `${imgDest}/${id}.jpg`)) {
+                    resp.status(204).send();
+                }
+                cleanup(file.path);
             }else if(file){
                 cleanup(file.path);
             }
