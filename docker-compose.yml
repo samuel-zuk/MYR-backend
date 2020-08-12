@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  database:
+    container_name: database
+    image: mongo
+    ports:
+      - "27017:27017"
+  API:
+    image: node
+    links:
+      - database
+    volumes:
+      - .:/app
+    ports:
+      - "1337:1337"
+    environment: 
+      MONGO_CONNECTION_STRING: 'mongodb://database:27017/ecg-myr'
+    working_dir: /app
+    command: npm start
