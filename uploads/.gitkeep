@@ -1,0 +1,2 @@
+This file is used to "keep" a folder within a git repository, since git does not track empty folders.
+THIS SHOULD NOT BE DELETED.
