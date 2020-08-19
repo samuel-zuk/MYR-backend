@@ -13,7 +13,7 @@
 
 # local config
 /config
-/uploads
+/uploads/*
 
 # database exports
 /dump
@@ -33,3 +33,5 @@ yarn-error.log*
 
 .env*
 !.env.example
+
+!uploads/.gitkeep
