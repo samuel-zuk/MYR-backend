@@ -13,7 +13,7 @@
 
 # local config
 /config
-/uploads
+/uploads/*
 
 # database exports
 /dump
@@ -33,3 +33,6 @@ yarn-error.log*
 
 .env*
 !.env.example
+
+#Track the uploads folder, using .gitkeep since the folder needs something within it in order for git to track it
+!uploads/.gitkeep
