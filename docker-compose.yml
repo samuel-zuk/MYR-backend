@@ -6,6 +6,25 @@ services:
     image: mongo
     ports:
       - "27017:27017"
+
+  database_seed:
+    image: mongo
+    links:
+      - database
+    volumes:
+      - ./__tests__/mongo/:/root
+    command:
+      mongorestore --host database --db ecg-myr /root/
+  
+  mongoexpress:
+    links:
+      - database
+    image: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_SERVER: database
+    ports:
+      - "8081:8081"
+
   API:
     image: node
     links:
