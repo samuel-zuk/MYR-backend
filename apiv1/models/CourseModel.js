@@ -1,20 +1,12 @@
 let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
+let { Settings } = require('./SceneModel')
 
 let LessonSchema = new Schema({
 	'name': { type: String, required: true },
 	'prompt': String,
 	'code': { type: String, required: true },
-    'settings': {
-        'skyColor': String,
-        'showFloor': Boolean,
-        'floorColor': String,
-        'showCoordHelper': Boolean,
-        'camPosition': String,
-        'camConfig': Number,
-        'canFly': Boolean,
-        'viewOnly': Boolean
-    },
+    'settings': Settings,
 }, {_id : false});
 
 let CourseSchema = new Schema({
