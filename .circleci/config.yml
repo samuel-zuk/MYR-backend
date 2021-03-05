@@ -3,13 +3,13 @@ jobs: # a collection of steps
   build: # runs not using Workflows must have a `build` job as entry point
     working_directory: ~/mern-starter # directory where steps will run
     docker: # run the steps with Docker
-      - image: circleci/node:10.9
+      - image: circleci/node:10.13
       - image: mongo:3.6.7-stretch
     steps: # a collection of executable commands 
       - checkout # special step to check out source code to working directory
       - run:
           name: install-mongo-cli
-          command: 'sudo apt-get install mongodb-clients'
+          command: 'sudo apt update && sudo apt-get install mongodb-clients'
       - run:
           name: mongo-test-db
           command: 'mongorestore -d ecg-myr __tests__/mongo'
