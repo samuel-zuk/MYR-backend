@@ -1,6 +1,6 @@
 let { verifyGoogleToken, isAdmin } = require('../authorization/verifyAuth.js');
 const { deleteImage, destFolder } = require('./ImageController');
-let SceneSchema = require('../models/SceneModel');
+let { SceneSchema } = require('../models/SceneModel');
 
 const ObjectId = require('mongoose').Types.ObjectId;
 const fs = require('fs');

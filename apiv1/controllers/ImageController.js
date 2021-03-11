@@ -1,5 +1,5 @@
 let { verifyGoogleToken, isAdmin } = require("../authorization/verifyAuth");
-let SceneSchema = require('../models/SceneModel');
+let { SceneSchema } = require('../models/SceneModel');
 let fs = require("fs");
 
 const JPG = ["FFD8FFDB", "FFD8FFE0"];
