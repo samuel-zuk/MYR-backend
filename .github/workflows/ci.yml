@@ -5,11 +5,12 @@ on: [push, pull_request]
 jobs:
   ci-checks:
     runs-on: ubuntu-latest
-    container:
-      image: node:10.13
-    
     steps:
       - uses: actions/checkout@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '10.13'
       - name: Setup cache
         uses: actions/cache@v2
         with:
@@ -17,7 +18,14 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - name: Fetch packages
         run: npm ci
+      - name: Setup Test Environment
+        run: |
+          docker-compose up -d database
+          docker-compose up database_seed
       - name: Run unit tests 
         run: npm test
+      - name: Tear down test environment
+        run: |
+          docker-compose down
       - name: Build production build
         run: npm run build
