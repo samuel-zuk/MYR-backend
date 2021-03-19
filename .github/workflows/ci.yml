@@ -27,5 +27,3 @@ jobs:
       - name: Tear down test environment
         run: |
           docker-compose down
-      - name: Build production build
-        run: npm run build
