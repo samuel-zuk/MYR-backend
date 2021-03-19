@@ -17,8 +17,6 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - name: Fetch packages
         run: npm ci
-      - name: Run Linter
-        run: npm run lint
       - name: Run unit tests 
         run: npm test
       - name: Build production build
