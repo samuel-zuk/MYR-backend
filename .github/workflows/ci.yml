@@ -23,7 +23,7 @@ jobs:
           docker-compose up -d database
           docker-compose up database_seed
       - name: Run unit tests 
-        run: npm test
+        run: npm test -- --forceExit
       - name: Tear down test environment
         run: |
           docker-compose down
