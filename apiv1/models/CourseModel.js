@@ -12,7 +12,14 @@ let LessonSchema = new Schema({
 let CourseSchema = new Schema({
     'shortname': String,
     'name': String,
-    'difficulty': Number,
+    'difficulty': {
+        type: Number,
+        enum: [0, 1, 2, 3],
+    },
+    'categories': [{
+        type: String,
+        enum: ["geometry", "transformations", "animations", "groups", "firstTimer", "teachers", "misc"],
+    }],
     'description': String,
     'lessons': [LessonSchema]
 });
