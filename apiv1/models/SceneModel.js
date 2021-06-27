@@ -8,12 +8,12 @@ const Settings = {
     'showCoordHelper': Boolean,
     'camPositon': String,
     'camConfig': Number,
-    'canFly': Boolean,
     'viewOnly': Boolean,
     'collectionID': String,
     'defaultLight': Boolean,
     'castShadow': Boolean,
-    'lightIndicator': Boolean
+    'lightIndicator': Boolean,
+    'moveSpeed' : Number
 };
 
 let SceneSchema = new Schema({
